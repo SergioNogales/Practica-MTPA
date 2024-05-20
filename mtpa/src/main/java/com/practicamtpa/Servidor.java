@@ -18,6 +18,15 @@ public class Servidor {
             System.out.println("Escuchando Clientes...");
             Socket unCliente = socket.accept();
             System.out.println("Alguien se conecta...");
+
+            /*
+            byte[] message = readSocket(cliente);
+            System.out.println("Mensaje eecibido...");
+            double result = doOperation(request); //Se genera la respuesta
+            ResponseProtocol respuesta = responseBuilder.buildResponse(result);
+            System.out.println("Generando respuesta");
+            sendResponse(cliente, respuesta);
+             */
             
         } catch (Exception e) 
         {
