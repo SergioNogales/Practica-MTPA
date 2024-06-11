@@ -26,11 +26,11 @@ public class Servidor implements Runnable {
     private Thread t;
     private OutputStream output;
     private InputStream input;
-    ArrayList<hiloRegistro> hilosRegister = new ArrayList<>();
+    //NO IMPLEMENTAR ArrayList<hiloRegistro> hilosRegister = new ArrayList<>();
     
     public Servidor() throws IOException {
         servidor = new ServerSocket(PORT_SERVICE);
-        hilosRegister = new ArrayList<>();
+        //hilosRegister = new ArrayList<>();
         t = new Thread(this);
         t.start();
     }
@@ -45,12 +45,10 @@ public class Servidor implements Runnable {
     
     public void initserver() {
         try {
-            // Recibir llamada de cliente
             System.out.println("Escuchando Clientes...");
             while (true) {
                 Socket sck = servidor.accept();
                 System.out.println("Alguien se conecta...");
-                // Handle the client in a separate thread
                 new Thread(() -> handleClient(sck)).start();
             }
         } catch (Exception e) {
@@ -73,10 +71,14 @@ public class Servidor implements Runnable {
             // Asignamos el
             switch (mensajeEntrante) {
                 case "register":
-                    // hilosRegister.add(new hiloRegistro(sck));
+                    //hilosRegister.add(new hiloRegistro(sck));
+                    hiloRegistro hR = new hiloRegistro(sck);
+                    hR.run();
                     output.write("okR".getBytes(), 0, "okR".getBytes().length);
                     break;
                 case "login":
+                    hiloLogin hL = new hiloLogin(sck);
+                    hL.run();
                 	output.write("okL".getBytes(), 0, "okL".getBytes().length);
                     break;
                 case "jugar":
@@ -130,7 +132,7 @@ class hiloRegistro extends Thread {
         BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
         String line;
         while ((line = br.readLine()) != null) {
-            if (line.split(";")[0] == username) {
+            if (line.split(";")[0].equals(username)) {
                 return line;
             }
         }
@@ -165,6 +167,54 @@ class hiloRegistro extends Thread {
                 return;
             }
             registrarUsuario(login+";"+password);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(hiloRegistro.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+
+class hiloLogin extends Thread {
+    private Socket socket;
+    private OutputStream os;
+    private InputStream is;
+    
+    
+    public String buscarUsuario(String username) throws FileNotFoundException, IOException{
+        BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (line.split(";")[0].equals(username)) {
+                return line;
+            }
+        }
+        return null;
+    }
+    
+    
+    public hiloLogin(Socket _socket) throws IOException {
+        socket = _socket;
+        os = socket.getOutputStream();
+        is = socket.getInputStream();
+    }
+    
+    @Override
+    public void run(){
+        try {
+            byte[] buffer = new byte[1024];
+            //Recibimos del socket el usuario y contraseña
+            is.read(buffer);
+            String login = new String(buffer).trim();
+            is.read(buffer);
+            String password = new String(buffer).trim();
+            //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
+            if(buscarUsuario(login).equals(null)){
+                os.write("denied".getBytes(), 0, "denied".getBytes().length);
+                return;
+            }
+            if (buscarUsuario(login).split(";")[1].equals(password)) {
+            	os.write("acepted".getBytes(), 0, "acepted".getBytes().length);
+            }
             
         } catch (IOException ex) {
             Logger.getLogger(hiloRegistro.class.getName()).log(Level.SEVERE, null, ex);
