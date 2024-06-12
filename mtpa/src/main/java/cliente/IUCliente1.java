@@ -1,5 +1,5 @@
 
-package cliente;
+package com.mycompany.cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,5 +1,5 @@
 
-package cliente;
+package com.mycompany.cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -117,16 +117,17 @@ public class IUClienteRegistro extends javax.swing.JFrame {
             out.println("register");
             out.println(username);
             out.println(password);
-
             char[] buffer = new char[1024];
             int length = in.read(buffer);
             String response = new String(buffer, 0, length).trim();
-
+            
             if (response.equals("okR")) {
                 JOptionPane.showMessageDialog(this, "Registro exitoso.");
-                //Tengo q ir a la siguiente interfaz de cola de juego
+                IUClienteCola clienteCola = new IUClienteCola(socket);
             } else if (response.equals("denied")) {
                 JOptionPane.showMessageDialog(this, "Registro denegado.");
+            } else{
+                JOptionPane.showMessageDialog(this, "Respuesta nula.");
             }
         } catch (IOException e) {
             e.printStackTrace();
