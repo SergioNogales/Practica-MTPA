@@ -74,7 +74,6 @@ public class Servidor implements Runnable {
                     //hilosRegister.add(new hiloRegistro(sck));
                     hiloRegistro hR = new hiloRegistro(sck);
                     hR.run();
-                    output.write("okR".getBytes(), 0, "okR".getBytes().length);
                     break;
                 case "login":
                     hiloLogin hL = new hiloLogin(sck);
@@ -117,35 +116,47 @@ class hiloRegistro extends Thread {
     private OutputStream os;
     private InputStream is;
     
- public void crearFichero() {
+ public void crearFichero() 
+ {
     File carpeta = new File("./TresEnRaya");
     carpeta.mkdirs();
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt"))) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt")))
+    {
         bw.write("A partir de aquí se escribirán todos los usuarios registrados, siguiendo el siguiente formato. login;password\n");
-    } catch (IOException e) {
+    } 
+    catch (IOException e)
+    {
         e.printStackTrace();
     }
 }
     
-    public String buscarUsuario(String username) throws FileNotFoundException, IOException{
+    public String buscarUsuario(String username)throws FileNotFoundException, IOException
+    {
         BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
         String line;
-        while ((line = br.readLine()) != null) {
-            if (line.split(";")[0].equals(username)) {
-                return line;
+        while ((line = br.readLine()) != null) 
+        {
+            if (line.contains(";"))
+            {
+                if (line.split(";")[0].equals(username)) 
+                {
+                    return line;
+                }
             }
         }
         return null;
     }
     
-    public void registrarUsuario(String username) throws FileNotFoundException, IOException{
+    public void registrarUsuario(String username, String password) throws FileNotFoundException, IOException
+    {
         BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt"));
-        bw.write(username);
+        bw.write(username + ";" + password);
         bw.newLine();
     }
     
-    public hiloRegistro(Socket _socket) throws IOException {
+    public hiloRegistro(Socket _socket) throws IOException 
+    {
         socket = _socket;
         os = socket.getOutputStream();
         is = socket.getInputStream();
@@ -153,23 +164,33 @@ class hiloRegistro extends Thread {
     }
     
     @Override
-    public void run(){
-        try {
+    public void run()
+    {
+        try 
+        {
             byte[] buffer = new byte[1024];
             //Recibimos del socket el usuario y contraseña
             is.read(buffer);
             String login = new String(buffer).trim();
-            is.read(buffer);
-            String password = new String(buffer).trim();
+            System.out.println(login);
+            byte[]buffer2 = new byte[1024];
+            is.read(buffer2);
+            String password = new String(buffer2).trim();
             //Si encontramos un usuario ya registrado con ese nombre le denegamos la petición de registro
-            if(buscarUsuario(login) != null){
+            if(buscarUsuario(login) == null)
+            {
+                registrarUsuario(login,password);
+                os.write("okR".getBytes(), 0, "okR".getBytes().length);
+            }
+            else
+            {
                 os.write("denied".getBytes(), 0, "denied".getBytes().length);
                 return;
             }
-            registrarUsuario(login+";"+password);
+        } 
+        catch (IOException ex) 
+        {
             
-        } catch (IOException ex) {
-            Logger.getLogger(hiloRegistro.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
