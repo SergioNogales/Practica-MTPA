@@ -201,26 +201,34 @@ class hiloLogin extends Thread {
     private InputStream is;
     
     
-    public String buscarUsuario(String username) throws FileNotFoundException, IOException{
+    public String buscarUsuario(String username) throws FileNotFoundException, IOException
+    {
         BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
         String line;
-        while ((line = br.readLine()) != null) {
-            if (line.split(";")[0].equals(username)) {
-                return line;
+        while ((line = br.readLine()) != null) 
+        {
+            if(line.contains(";"))
+            {
+                if (line.split(";")[0].equals(username)) 
+                {
+                    return line;
+                }
             }
         }
         return null;
     }
     
     
-    public hiloLogin(Socket _socket) throws IOException {
+    public hiloLogin(Socket _socket) throws IOException 
+    {
         socket = _socket;
         os = socket.getOutputStream();
         is = socket.getInputStream();
     }
     
     @Override
-    public void run(){
+    public void run()
+    {
         try {
             byte[] buffer = new byte[1024];
             //Recibimos del socket el usuario y contraseña
@@ -229,16 +237,62 @@ class hiloLogin extends Thread {
             is.read(buffer);
             String password = new String(buffer).trim();
             //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
-            if(buscarUsuario(login).equals(null)){
+            if(buscarUsuario(login).equals(null))
+            {
                 os.write("denied".getBytes(), 0, "denied".getBytes().length);
                 return;
             }
-            if (buscarUsuario(login).split(";")[1].equals(password)) {
+            if (buscarUsuario(login).split(";")[1].equals(password))
+            {
             	os.write("acepted".getBytes(), 0, "acepted".getBytes().length);
             }
             
         } catch (IOException ex) {
             Logger.getLogger(hiloRegistro.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+}
+
+class hiloJugar extends Thread {
+    private Socket socket;
+    private OutputStream os;
+    private InputStream is;
+    
+    public hiloJugar(Socket _socket) throws IOException 
+    {
+        socket = _socket;
+        os = socket.getOutputStream();
+        is = socket.getInputStream();
+    }
+    
+    @Override
+    public void run()
+    {
+        
+    }
+}
+
+class hiloPartida extends Thread {
+    private Socket Cli1;
+    private Socket Cli2;
+    private OutputStream os1;
+    private InputStream is1;
+    private OutputStream os2;
+    private InputStream is2;
+    
+    public hiloPartida(Socket _socket, Socket __socket) throws IOException 
+    {
+        Cli1 = _socket;
+        os1 = Cli1.getOutputStream();
+        is1 = Cli1.getInputStream();
+        Cli2 = __socket;
+        os2 = Cli2.getOutputStream();
+        is2 = Cli2.getInputStream();
+    }
+    
+    @Override
+    public void run()
+    {
+        
     }
 }
