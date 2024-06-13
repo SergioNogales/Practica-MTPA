@@ -116,7 +116,6 @@ public class IUClienteRegistro extends javax.swing.JFrame {
         }
 
         try {
-            out.println("register");
             //while(true)
             //{
                 out.println(username);
@@ -128,10 +127,14 @@ public class IUClienteRegistro extends javax.swing.JFrame {
 
                 if (response.equals("okR")) {
                     JOptionPane.showMessageDialog(this, "Registro exitoso.");
-                    IUClienteCola clienteCola = new IUClienteCola(socket);
+                    IUCliente1 login = new IUCliente1();
+                    login.setVisible(true);
+                    this.setVisible(false);
                     //break;
                 } else if (response.equals("denied")) {
                     JOptionPane.showMessageDialog(this, "Registro denegado.\nYa existe un usuario con ese nombre.");
+                    jTextField1.setText("");
+                    jPasswordField1.setText("");
                 } else{
                     JOptionPane.showMessageDialog(this, "Respuesta nula.");
                     //break;

@@ -202,22 +202,21 @@ class hiloLogin extends Thread {
     private InputStream is;
     
     
-    public String buscarUsuario(String username) throws FileNotFoundException, IOException
+    public String buscarUsuario(String username) 
+            throws FileNotFoundException, IOException 
     {
         BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
         String line;
-        while ((line = br.readLine()) != null) 
-        {
-            if(line.contains(username))
-            {
-                if (line.split(";")[0].equals(username)) 
-                {
-                    return line;
-                }
+        while ((line = br.readLine()) != null) {
+            if (line.split(";")[0].equals(username)) {
+                br.close();
+                return line;
             }
         }
+        br.close();
         return null;
     }
+
     
     
     public hiloLogin(Socket _socket) throws IOException 
@@ -237,18 +236,23 @@ class hiloLogin extends Thread {
                 //Recibimos del socket el usuario y contraseña
                 is.read(buffer);
                 String login = new String(buffer).trim();
+                System.out.println(login);
                 byte[]buffer2 = new byte[1024];
                 is.read(buffer2);
                 String password = new String(buffer2).trim();
+                System.out.println(password);
                 //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
-                if(buscarUsuario(login).equals(null))
-                {
-                    os.write("denied".getBytes(), 0, "denied".getBytes().length);
-                }
-                if (buscarUsuario(login).split(";")[1].equals(password))
-                {
-                    os.write("acepted".getBytes(), 0, "acepted".getBytes().length);
-                    break;
+                String usuario = buscarUsuario(login);
+                if (usuario != null) {
+                    String[] parts = usuario.split(";");
+                    if (parts[1].equals(password)) {
+                        os.write("okL".getBytes());
+                    } else {
+                        os.write("denied".getBytes());
+                    }
+                } else {
+                    System.out.println("no entra");
+                    os.write("denied".getBytes());
                 }
             }
             

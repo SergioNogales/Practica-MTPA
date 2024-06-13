@@ -94,7 +94,6 @@ public class IUClienteLogin extends javax.swing.JFrame {
         }
 
         try {
-            out.println("login");
             //while(true)
             //{
                 out.println(username);
@@ -107,10 +106,17 @@ public class IUClienteLogin extends javax.swing.JFrame {
 
                 if (response.equals("okL")) {
                     JOptionPane.showMessageDialog(this, "Login exitoso.");
-                   //Tengo q ir a la siguiente interfaz de cola de juego
+                    IUClienteCola login = new IUClienteCola(socket);
+                    login.setVisible(true);
+                    this.setVisible(false);
                    //break;
                 } else if (response.equals("denied")) {
                     JOptionPane.showMessageDialog(this, "Login denegado.");
+                    jTextField1.setText("");
+                    jPasswordField1.setText("");
+                } else{
+                    JOptionPane.showMessageDialog(this, "Respuesta nula.");
+                    //break;
                 }
             //}
         } catch (IOException e) {
