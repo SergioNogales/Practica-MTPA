@@ -63,6 +63,7 @@ public class Servidor implements Runnable {
             byte[] buffer = new byte[1024];
             input = sck.getInputStream();
             output = sck.getOutputStream();
+            ArrayList<jugador> jugadores = new ArrayList<jugador>();
             
             input.read(buffer);
             mensajeEntrante = new String(buffer).trim();
@@ -71,7 +72,6 @@ public class Servidor implements Runnable {
             // Asignamos el
             switch (mensajeEntrante) {
                 case "register":
-                    //hilosRegister.add(new hiloRegistro(sck));
                     hiloRegistro hR = new hiloRegistro(sck);
                     hR.run();
                     break;
@@ -80,8 +80,25 @@ public class Servidor implements Runnable {
                     hL.run();
                     break;
                 case "jugar":
-                	output.write("okJ".getBytes(), 0, "okJ".getBytes().length);
+                    buffer = new byte[1024];
+                    input.read(buffer);
+                    mensajeEntrante = new String(buffer).trim();
+                    //Creamos el objeto jugador
+                    jugadores.add(new jugador(sck, mensajeEntrante));
                     break;
+                case "meboi":
+                    //cogemos el usuario a quitar de la lista
+                    buffer = new byte[1024];
+                    input.read(buffer);
+                    mensajeEntrante = new String(buffer).trim();
+                    //Eliminamos el objeto
+                    for(int i = 0; i<=jugadores.size(); i++)
+                    {
+                        if(mensajeEntrante == jugadores.toArray()[i].getUsername())
+                        {
+                            
+                        }
+                    }
                 default:
                     System.out.println("Pasa Registern't");
                     break;
@@ -262,41 +279,47 @@ class hiloLogin extends Thread {
     }
 }
 
-class hiloJugar extends Thread {
+class jugador{
     private Socket socket;
     private OutputStream os;
     private InputStream is;
+    private String username;
     
-    public hiloJugar(Socket _socket) throws IOException 
+    public jugador(Socket _socket, String _username) throws IOException 
     {
         socket = _socket;
         os = socket.getOutputStream();
         is = socket.getInputStream();
+        username = _username;
     }
-    
-    @Override
-    public void run()
-    {
-        
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public OutputStream getOs() {
+        return os;
+    }
+
+    public InputStream getIs() {
+        return is;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }
 
+
 class hiloPartida extends Thread {
-    private Socket Cli1;
-    private Socket Cli2;
-    private OutputStream os1;
-    private InputStream is1;
-    private OutputStream os2;
-    private InputStream is2;
+
+    private jugador p1;
+    private jugador p2;
     
-    public hiloPartida(Socket _socket, Socket __socket) throws IOException 
+    public hiloPartida(jugador _p1, jugador _p2) throws IOException 
     {
-        Cli1 = _socket;
-        os1 = Cli1.getOutputStream();
-        is1 = Cli1.getInputStream();
-        Cli2 = __socket;
-        os2 = Cli2.getOutputStream();
-        is2 = Cli2.getInputStream();
+        p1 = _p1;
+        p2 = _p2;
     }
     
     @Override
