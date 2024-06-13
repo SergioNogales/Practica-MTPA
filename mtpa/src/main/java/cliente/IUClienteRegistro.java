@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import static java.lang.System.in;
 import static java.lang.System.out;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 
@@ -115,22 +117,30 @@ public class IUClienteRegistro extends javax.swing.JFrame {
 
         try {
             out.println("register");
-            out.println(username);
-            out.println(password);
-            char[] buffer = new char[1024];
-            int length = in.read(buffer);
-            String response = new String(buffer, 0, length).trim();
-            
-            if (response.equals("okR")) {
-                JOptionPane.showMessageDialog(this, "Registro exitoso.");
-                IUClienteCola clienteCola = new IUClienteCola(socket);
-            } else if (response.equals("denied")) {
-                JOptionPane.showMessageDialog(this, "Registro denegado.");
-            } else{
-                JOptionPane.showMessageDialog(this, "Respuesta nula.");
-            }
+            //while(true)
+            //{
+                out.println(username);
+                Thread.sleep((long) 20);
+                out.println(password);
+                char[] buffer = new char[1024];
+                int length = in.read(buffer);
+                String response = new String(buffer, 0, length).trim();
+
+                if (response.equals("okR")) {
+                    JOptionPane.showMessageDialog(this, "Registro exitoso.");
+                    IUClienteCola clienteCola = new IUClienteCola(socket);
+                    //break;
+                } else if (response.equals("denied")) {
+                    JOptionPane.showMessageDialog(this, "Registro denegado.\nYa existe un usuario con ese nombre.");
+                } else{
+                    JOptionPane.showMessageDialog(this, "Respuesta nula.");
+                    //break;
+                }
+            //}
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(IUClienteRegistro.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

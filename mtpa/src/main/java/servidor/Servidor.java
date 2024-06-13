@@ -78,7 +78,6 @@ public class Servidor implements Runnable {
                 case "login":
                     hiloLogin hL = new hiloLogin(sck);
                     hL.run();
-                	output.write("okL".getBytes(), 0, "okL".getBytes().length);
                     break;
                 case "jugar":
                 	output.write("okJ".getBytes(), 0, "okJ".getBytes().length);
@@ -116,20 +115,19 @@ class hiloRegistro extends Thread {
     private OutputStream os;
     private InputStream is;
     
- public void crearFichero() 
- {
-    File carpeta = new File("./TresEnRaya");
-    carpeta.mkdirs();
+    public static void crearFichero() {
+        File carpeta = new File("./TresEnRaya");
+        carpeta.mkdirs();
 
-    try (BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt")))
-    {
-        bw.write("A partir de aquí se escribirán todos los usuarios registrados, siguiendo el siguiente formato. login;password\n");
-    } 
-    catch (IOException e)
-    {
-        e.printStackTrace();
+        File archivo = new File("./TresEnRaya/registro.txt");
+        if (!archivo.exists()) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+                bw.write("A partir de aquí se escribirán todos los usuarios registrados, siguiendo el siguiente formato. login;password\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
-}
     
     public String buscarUsuario(String username)throws FileNotFoundException, IOException
     {
@@ -137,7 +135,7 @@ class hiloRegistro extends Thread {
         String line;
         while ((line = br.readLine()) != null) 
         {
-            if (line.contains(";"))
+            if(line.contains(username))
             {
                 if (line.split(";")[0].equals(username)) 
                 {
@@ -150,9 +148,10 @@ class hiloRegistro extends Thread {
     
     public void registrarUsuario(String username, String password) throws FileNotFoundException, IOException
     {
-        BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt"));
+        BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt", true));
         bw.write(username + ";" + password);
         bw.newLine();
+        bw.close();
     }
     
     public hiloRegistro(Socket _socket) throws IOException 
@@ -168,24 +167,26 @@ class hiloRegistro extends Thread {
     {
         try 
         {
-            byte[] buffer = new byte[1024];
-            //Recibimos del socket el usuario y contraseña
-            is.read(buffer);
-            String login = new String(buffer).trim();
-            System.out.println(login);
-            byte[]buffer2 = new byte[1024];
-            is.read(buffer2);
-            String password = new String(buffer2).trim();
-            //Si encontramos un usuario ya registrado con ese nombre le denegamos la petición de registro
-            if(buscarUsuario(login) == null)
+            while(true)
             {
-                registrarUsuario(login,password);
-                os.write("okR".getBytes(), 0, "okR".getBytes().length);
-            }
-            else
-            {
-                os.write("denied".getBytes(), 0, "denied".getBytes().length);
-                return;
+                byte[] buffer = new byte[1024];
+                //Recibimos del socket el usuario y contraseña
+                is.read(buffer);
+                String login = new String(buffer).trim();
+                byte[]buffer2 = new byte[1024];
+                is.read(buffer2);
+                String password = new String(buffer2).trim();
+                //Si encontramos un usuario ya registrado con ese nombre le denegamos la petición de registro
+                if(buscarUsuario(login) == null)
+                {
+                    registrarUsuario(login, password);
+                    os.write("okR".getBytes(), 0, "okR".getBytes().length);
+                    break;
+                }
+                else
+                {
+                    os.write("denied".getBytes(), 0, "denied".getBytes().length);
+                }
             }
         } 
         catch (IOException ex) 
@@ -207,7 +208,7 @@ class hiloLogin extends Thread {
         String line;
         while ((line = br.readLine()) != null) 
         {
-            if(line.contains(";"))
+            if(line.contains(username))
             {
                 if (line.split(";")[0].equals(username)) 
                 {
@@ -230,21 +231,25 @@ class hiloLogin extends Thread {
     public void run()
     {
         try {
-            byte[] buffer = new byte[1024];
-            //Recibimos del socket el usuario y contraseña
-            is.read(buffer);
-            String login = new String(buffer).trim();
-            is.read(buffer);
-            String password = new String(buffer).trim();
-            //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
-            if(buscarUsuario(login).equals(null))
+            while(true)
             {
-                os.write("denied".getBytes(), 0, "denied".getBytes().length);
-                return;
-            }
-            if (buscarUsuario(login).split(";")[1].equals(password))
-            {
-            	os.write("acepted".getBytes(), 0, "acepted".getBytes().length);
+                byte[] buffer = new byte[1024];
+                //Recibimos del socket el usuario y contraseña
+                is.read(buffer);
+                String login = new String(buffer).trim();
+                byte[]buffer2 = new byte[1024];
+                is.read(buffer2);
+                String password = new String(buffer2).trim();
+                //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
+                if(buscarUsuario(login).equals(null))
+                {
+                    os.write("denied".getBytes(), 0, "denied".getBytes().length);
+                }
+                if (buscarUsuario(login).split(";")[1].equals(password))
+                {
+                    os.write("acepted".getBytes(), 0, "acepted".getBytes().length);
+                    break;
+                }
             }
             
         } catch (IOException ex) {

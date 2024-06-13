@@ -2,6 +2,7 @@ cliente\IUClienteLogin.class
 servidor\Main.class
 cliente\IUCliente1.class
 cliente\IUClienteRegistro$3.class
+servidor\hiloJugar.class
 cliente\IUClienteRegistro$1.class
 servidor\hiloLogin.class
 cliente\IUCliente1$3.class
@@ -11,4 +12,5 @@ cliente\IUClienteLogin$1.class
 cliente\IUClienteRegistro$2.class
 cliente\IUClienteRegistro.class
 cliente\IUCliente1$1.class
+servidor\hiloPartida.class
 cliente\IUClienteCola.class

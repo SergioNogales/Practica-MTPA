@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 
@@ -93,21 +95,28 @@ public class IUClienteLogin extends javax.swing.JFrame {
 
         try {
             out.println("login");
-            out.println(username);
-            out.println(password);
+            //while(true)
+            //{
+                out.println(username);
+                Thread.sleep((long) 20);
+                out.println(password);
 
-            char[] buffer = new char[1024];
-            int length = in.read(buffer);
-            String response = new String(buffer, 0, length).trim();
+                char[] buffer = new char[1024];
+                int length = in.read(buffer);
+                String response = new String(buffer, 0, length).trim();
 
-            if (response.equals("okL")) {
-                JOptionPane.showMessageDialog(this, "Login exitoso.");
-               //Tengo q ir a la siguiente interfaz de cola de juego
-            } else if (response.equals("denied")) {
-                JOptionPane.showMessageDialog(this, "Login denegado.");
-            }
+                if (response.equals("okL")) {
+                    JOptionPane.showMessageDialog(this, "Login exitoso.");
+                   //Tengo q ir a la siguiente interfaz de cola de juego
+                   //break;
+                } else if (response.equals("denied")) {
+                    JOptionPane.showMessageDialog(this, "Login denegado.");
+                }
+            //}
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(IUClienteLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
     
