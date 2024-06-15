@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -19,7 +21,7 @@ public class IUClienteCola extends javax.swing.JFrame {
     private String username;
     private DefaultListModel<String> listModel;
 
-    public IUClienteCola(Socket socket, String username) {
+    public IUClienteCola(Socket socket ,String username) {
         this.socket = socket;
         this.username = username;
         initComponents();
@@ -115,16 +117,22 @@ public class IUClienteCola extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JOptionPane.showMessageDialog(this, "Has ganadooo!!");
-        IUClienteJugar jugar = new IUClienteJugar(socket);
-        jugar.setVisible(true);
-        this.setVisible(false);
+        String usuario = jList1.getSelectedValue();
+        if (usuario != null) {
+            JOptionPane.showMessageDialog(this, "Has seleccionado a " + usuario);
+            out.println("jugar");
+            IUClienteJugar jugar = new IUClienteJugar(usuario);
+            jugar.setVisible(true);
+            this.setVisible(false);
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario primero.");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        listModel.removeElement(username);
-        jList1.repaint();
-        JOptionPane.showMessageDialog(this, "F");
+        IUCliente1 c1 = new IUCliente1();
+        c1.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void conexionServidor() {
