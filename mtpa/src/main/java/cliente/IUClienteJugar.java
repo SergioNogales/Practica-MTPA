@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 
@@ -243,10 +245,14 @@ public class IUClienteJugar extends javax.swing.JFrame {
     }//GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JOptionPane.showMessageDialog(this, "Te rindes...");
-        IUClienteCola cola = new IUClienteCola(socket,usuario);
-        cola.setVisible(true);
-        this.setVisible(false);
+        try {
+            JOptionPane.showMessageDialog(this, "Te rindes...");
+            IUClienteCola cola = new IUClienteCola(usuario);
+            cola.setVisible(true);
+            this.setVisible(false);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed

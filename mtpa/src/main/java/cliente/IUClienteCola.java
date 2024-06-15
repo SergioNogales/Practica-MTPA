@@ -4,6 +4,7 @@ package cliente;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -21,19 +22,29 @@ public class IUClienteCola extends javax.swing.JFrame {
     private String username;
     private DefaultListModel<String> listModel;
 
-    public IUClienteCola(Socket socket ,String username) {
-        this.socket = socket;
-        this.username = username;
-        initComponents();
-        conexionServidor();
-        
-        listModel = new DefaultListModel<>();
-        jList1.setModel(listModel);
-        
-        listModel.addElement(username);
-        jList1.repaint();
-        
+public IUClienteCola(String username) throws IOException, InterruptedException {
+    this.username = username;
+    initComponents();
+    connectToServer();
+    
+    out.println("jugar");
+    Thread.sleep(20);  // No es necesario hacer casting aquí
+    out.println(username);
+    
+    listModel = new DefaultListModel<>();
+    jList1.setModel(listModel);
+    
+    char[] buffer = new char[1024];
+    int length = in.read(buffer);
+    String jugadoresString = new String(buffer, 0, length).trim();
+    String[] jugadores = jugadoresString.split(","); // Suponiendo que el servidor envía nombres separados por comas
+
+    for (String jugador : jugadores) {
+        listModel.addElement(jugador);
     }
+    jList1.repaint();
+}
+
     
     
     @SuppressWarnings("unchecked")
@@ -120,7 +131,7 @@ public class IUClienteCola extends javax.swing.JFrame {
         String usuario = jList1.getSelectedValue();
         if (usuario != null) {
             JOptionPane.showMessageDialog(this, "Has seleccionado a " + usuario);
-            out.println("jugar");
+            out.println("jugando");
             IUClienteJugar jugar = new IUClienteJugar(usuario);
             jugar.setVisible(true);
             this.setVisible(false);
@@ -135,8 +146,9 @@ public class IUClienteCola extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void conexionServidor() {
+    private void connectToServer() {
         try {
+            socket = new Socket("localhost", 7894);
             out = new PrintWriter(socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {

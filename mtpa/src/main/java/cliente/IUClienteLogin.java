@@ -106,7 +106,7 @@ public class IUClienteLogin extends javax.swing.JFrame {
 
                 if (response.equals("okL")) {
                     JOptionPane.showMessageDialog(this, "Login exitoso.");
-                    IUClienteCola cola = new IUClienteCola(socket,username);
+                    IUClienteCola cola = new IUClienteCola(username);
                     cola.setVisible(true);
                     this.setVisible(false);
                    //break;
@@ -120,7 +120,6 @@ public class IUClienteLogin extends javax.swing.JFrame {
                 }
             //}
         } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException ex) {
             Logger.getLogger(IUClienteLogin.class.getName()).log(Level.SEVERE, null, ex);
         }

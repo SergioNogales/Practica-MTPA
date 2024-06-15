@@ -87,7 +87,15 @@ public class Servidor implements Runnable {
                     input.read(buffer);
                     mensajeEntrante = new String(buffer).trim();
                     //Creamos el objeto jugador
-                    jugadores.add(new jugador(sck, mensajeEntrante));
+                    //jugadores.add(new jugador(sck, mensajeEntrante));
+                    String[] arrayJugadores = new String[10];
+                    //for (int i = 0; i < 10; i++) {
+                        arrayJugadores[0] = mensajeEntrante;
+                        arrayJugadores[1] = "Raquel";
+                        String arrayJugadoresString = String.join(",", arrayJugadores);
+                        output.write(arrayJugadoresString.getBytes());
+                        //System.out.println(arrayJugadores[i]);
+                    //}
                     break;
                 case "meboi":
                     //cogemos el usuario a quitar de la lista
@@ -103,6 +111,7 @@ public class Servidor implements Runnable {
                             jugadores.remove(jugadores.toArray()[i]);
                         }
                     }
+                    break;
                 default:
                     System.out.println("Pasa Registern't");
                     break;
@@ -257,11 +266,9 @@ class hiloLogin extends Thread {
                 //Recibimos del socket el usuario y contraseña
                 is.read(buffer);
                 String login = new String(buffer).trim();
-                System.out.println(login);
                 byte[]buffer2 = new byte[1024];
                 is.read(buffer2);
                 String password = new String(buffer2).trim();
-                System.out.println(password);
                 //Si encontramos que no hay un usuario registrado con ese login denegamos la entrada
                 String usuario = buscarUsuario(login);
                 if (usuario != null) {
@@ -272,7 +279,6 @@ class hiloLogin extends Thread {
                         os.write("denied".getBytes());
                     }
                 } else {
-                    System.out.println("no entra");
                     os.write("denied".getBytes());
                 }
             }
