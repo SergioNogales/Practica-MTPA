@@ -18,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,11 +36,36 @@ public class Servidor implements Runnable {
         //hilosRegister = new ArrayList<>();
         t = new Thread(this);
         t.start();
+        initserver();  
     }
     
     public void run() {
         try {
-            initserver();  
+            boolean salir = false;
+            Scanner scanner = new Scanner(System.in);
+
+            while (!salir) {
+                System.out.println("MENU SERVIDOR");
+                System.out.println("-------------");
+                System.out.println("1. Lista de Usuarios Conectados");
+                System.out.println("2. Parar el servidor");
+                System.out.print("Seleccione una opcion: ");
+
+                int opcion = scanner.nextInt();
+
+                switch (opcion) {
+                    case 1:
+                        System.out.println("Lista de Usuarios Conectados (a implementar)");
+                        break;
+                    case 2:
+                        System.out.println("Parando servidor...\n\n");
+                        servidor.close();
+                        break;
+                    default:
+                        System.out.println("Opción no válida. Por favor, seleccione una opción del menú.");
+                        break;
+                }
+            }  
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -47,10 +73,9 @@ public class Servidor implements Runnable {
     
     public void initserver() {
         try {
-            System.out.println("Escuchando Clientes...");
+            System.out.println("Servidor encendido");
             while (true) {
                 Socket sck = servidor.accept();
-                System.out.println("Alguien se conecta...");
                 new Thread(() -> handleClient(sck)).start();
             }
         } catch (Exception e) {
@@ -69,8 +94,6 @@ public class Servidor implements Runnable {
             
             input.read(buffer);
             mensajeEntrante = new String(buffer).trim();
-            //
-
             // Asignamos el
             switch (mensajeEntrante) {
                 case "register":
@@ -113,7 +136,6 @@ public class Servidor implements Runnable {
                     }
                     break;
                 default:
-                    System.out.println("Pasa Registern't");
                     break;
             }
         } catch (Exception e) {
