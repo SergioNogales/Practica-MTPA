@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ public class Servidor implements Runnable {
                     hL.run();
                     break;
                 case "jugar":
+                    //Cogemos como mensaje entrante el username del usuario
                     buffer = new byte[1024];
                     input.read(buffer);
                     mensajeEntrante = new String(buffer).trim();
@@ -94,9 +97,10 @@ public class Servidor implements Runnable {
                     //Eliminamos el objeto
                     for(int i = 0; i<=jugadores.size(); i++)
                     {
-                        if(mensajeEntrante == jugadores.toArray()[i].getUsername())
+                        jugador tmp = (jugador) jugadores.toArray()[i];
+                        if(tmp.getUsername() == mensajeEntrante)
                         {
-                            
+                            jugadores.remove(jugadores.toArray()[i]);
                         }
                     }
                 default:
@@ -281,6 +285,8 @@ class hiloLogin extends Thread {
 
 class jugador{
     private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     private OutputStream os;
     private InputStream is;
     private String username;
@@ -288,15 +294,24 @@ class jugador{
     public jugador(Socket _socket, String _username) throws IOException 
     {
         socket = _socket;
-        os = socket.getOutputStream();
-        is = socket.getInputStream();
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
         username = _username;
+        
     }
 
     public Socket getSocket() {
         return socket;
     }
 
+    public ObjectOutputStream getOOs() {
+        return out;
+    }
+
+    public ObjectInputStream getOIs() {
+        return in;
+    }
+    
     public OutputStream getOs() {
         return os;
     }
@@ -310,11 +325,11 @@ class jugador{
     }
 }
 
-
 class hiloPartida extends Thread {
 
     private jugador p1;
     private jugador p2;
+    private int[][] tablero = new int[3][3];
     
     public hiloPartida(jugador _p1, jugador _p2) throws IOException 
     {
@@ -325,6 +340,114 @@ class hiloPartida extends Thread {
     @Override
     public void run()
     {
+        inicializarTablero();
+        while(true)
+        {
+            try {
+                turno(p1);
+                if(comprobador() == true)
+                {
+                    return;
+                }
+                turno(p2);
+                if(comprobador() == true)
+                {
+                    return;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(hiloPartida.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(hiloPartida.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public boolean comprobador() throws IOException
+    {
+        if(comprobador(tablero)!= "no")
+        {
+            switch (comprobador(tablero)){
+                case "x":{
+                    p1.getOs().write("x".getBytes());
+                    p2.getOs().write("x".getBytes());
+                }
+                case "o":{
+                    p1.getOs().write("o".getBytes());
+                    p2.getOs().write("o".getBytes());
+                }
+            }
+            p1.getOOs().writeObject(tablero);
+            p2.getOOs().writeObject(tablero);
+            return true;
+        }
+        return false;
+    }
+    
+    public void turno (jugador player) throws IOException, ClassNotFoundException
+    {
+        player.getOs().write("mueve".getBytes());
+        player.getOOs().writeObject(tablero);
+        tablero = (int[][])player.getOIs().readObject();
+    }
+    
+    public void inicializarTablero() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                tablero[i][j] = 0;
+            }
+        }
+    }
+    
+    public String comprobador(int[][] tablero)
+    {
         
+        for(int i = 0; i<3; i++)
+        {
+            //horizontal
+            if(tablero[i][0] == tablero[i][1] && tablero[i][0] == tablero[i][2] && tablero[i][0] != 0)
+            {
+                if(tablero[i][0] == 1)
+                {
+                    return "x";
+                }
+                else{
+                    return "o";
+                }
+            }
+            //vertical
+            if(tablero[0][i] == tablero[1][i] && tablero[0][i] == tablero[2][i] && tablero[0][i] != 0)
+            {
+                if(tablero[0][i] == 1)
+                {
+                    return "x";
+                }
+                else{
+                    return "o";
+                }
+            }
+            //diagonal
+            if(tablero[0][0] == tablero[1][1] && tablero[0][0] == tablero[2][2] && tablero[2][2] != 0)
+            {
+                if(tablero[0][i] == 1)
+                {
+                    return "x";
+                }
+                else{
+                    return "o";
+                }
+            }
+            //diagonal opuesta
+            if(tablero[0][2] == tablero[1][1] && tablero[0][2] == tablero[2][0] && tablero[0][2] != 0)
+            {
+                if(tablero[0][i] == 1)
+                {
+                    return "x";
+                }
+                else{
+                    return "o";
+                }
+            }
+        }
+        return "no";
     }
 }
