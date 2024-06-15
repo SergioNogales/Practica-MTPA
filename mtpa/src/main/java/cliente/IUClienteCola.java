@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package cliente;
 
 import java.io.BufferedReader;
@@ -10,23 +6,33 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 
-/**
- *
- * @author usuario
- */
+
 public class IUClienteCola extends javax.swing.JFrame {
 
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private String username;
+    private DefaultListModel<String> listModel;
 
-    public IUClienteCola(Socket socket) {
+    public IUClienteCola(Socket socket, String username) {
         this.socket = socket;
+        this.username = username;
         initComponents();
         conexionServidor();
+        
+        listModel = new DefaultListModel<>();
+        jList1.setModel(listModel);
+        
+        listModel.addElement(username);
+        jList1.repaint();
+        
     }
-
+    
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -44,15 +50,25 @@ public class IUClienteCola extends javax.swing.JFrame {
         jLabel1.setText("Usuarios conectados:");
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "hola1", "hola2", "hola3" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         jScrollPane1.setViewportView(jList1);
 
         jButton1.setText("Retar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Salir");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,6 +114,19 @@ public class IUClienteCola extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JOptionPane.showMessageDialog(this, "Has ganadooo!!");
+        IUClienteJugar jugar = new IUClienteJugar(socket);
+        jugar.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        listModel.removeElement(username);
+        jList1.repaint();
+        JOptionPane.showMessageDialog(this, "F");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     private void conexionServidor() {
         try {
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -115,4 +144,6 @@ public class IUClienteCola extends javax.swing.JFrame {
     private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
+
+
 }
