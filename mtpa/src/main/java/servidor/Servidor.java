@@ -29,6 +29,8 @@ public class Servidor implements Runnable {
     private Thread t;
     private OutputStream output;
     private InputStream input;
+    private jugador[] jugadores = new jugador[100];
+    private int playerCount = 0;
     //NO IMPLEMENTAR ArrayList<hiloRegistro> hilosRegister = new ArrayList<>();
     
     public Servidor() throws IOException {
@@ -90,51 +92,74 @@ public class Servidor implements Runnable {
             byte[] buffer = new byte[1024];
             input = sck.getInputStream();
             output = sck.getOutputStream();
-            ArrayList<jugador> jugadores = new ArrayList<jugador>();
             
             input.read(buffer);
             mensajeEntrante = new String(buffer).trim();
             // Asignamos el
-            switch (mensajeEntrante) {
+            switch (mensajeEntrante)
+            {
                 case "register":
                     hiloRegistro hR = new hiloRegistro(sck);
                     hR.run();
                     break;
+                    
                 case "login":
                     hiloLogin hL = new hiloLogin(sck);
                     hL.run();
                     break;
+                    
                 case "jugar":
                     //Cogemos como mensaje entrante el username del usuario
                     buffer = new byte[1024];
                     input.read(buffer);
                     mensajeEntrante = new String(buffer).trim();
                     //Creamos el objeto jugador
-                    //jugadores.add(new jugador(sck, mensajeEntrante));
-                    String[] arrayJugadores = new String[10];
-                    //for (int i = 0; i < 10; i++) {
-                        arrayJugadores[0] = mensajeEntrante;
-                        arrayJugadores[1] = "Raquel";
-                        String arrayJugadoresString = String.join(",", arrayJugadores);
-                        output.write(arrayJugadoresString.getBytes());
-                        //System.out.println(arrayJugadores[i]);
-                    //}
+                    jugadores[playerCount] = (new jugador(sck, mensajeEntrante));
+                    playerCount++;
+                    StringBuilder arrayJugadoresString = new StringBuilder();
+                    for (int i = 0; i < jugadores.length; i++) 
+                    {
+                        jugador tmp;
+                        if (jugadores[i] != null) {
+                            tmp = jugadores[i];
+                            if (arrayJugadoresString.length() > 0) {
+                                arrayJugadoresString.append(",");
+                            }
+                            arrayJugadoresString.append(tmp.getUsername());
+                        }
+                    }
+                    output.write(arrayJugadoresString.toString().getBytes());
+                    System.out.println("username todos "+arrayJugadoresString);
+                    
                     break;
+                    
                 case "meboi":
                     //cogemos el usuario a quitar de la lista
                     buffer = new byte[1024];
                     input.read(buffer);
                     mensajeEntrante = new String(buffer).trim();
                     //Eliminamos el objeto
-                    for(int i = 0; i<=jugadores.size(); i++)
+                    for(int i = 0; i<=jugadores.length; i++)
                     {
-                        jugador tmp = (jugador) jugadores.toArray()[i];
+                        jugador tmp = jugadores[i];
                         if(tmp.getUsername() == mensajeEntrante)
                         {
-                            jugadores.remove(jugadores.toArray()[i]);
+                            eliminarJugador(jugadores, i);
                         }
                     }
                     break;
+                    
+                case "partida":
+                    buffer = new byte[1024];
+                    input.read(buffer);
+                    String player1 = new String(buffer).trim();
+                    input.read(buffer);
+                    String player2 = new String(buffer).trim();
+                    jugador p1 = buscarJugador(player1);
+                    jugador p2 = buscarJugador(player2);
+                    new hiloPartida(p1, p2);
+                    break;
+                    
                 default:
                     break;
             }
@@ -142,8 +167,35 @@ public class Servidor implements Runnable {
             e.printStackTrace();
         }
     }
+    
+    public jugador buscarJugador(String username) throws IOException
+    {
+        for(int i = 0; i<playerCount; i++)
+        {
+            if(jugadores[i].getUsername() == username)
+            {
+                return jugadores[i];
+            }
+        }
+        throw new IOException();
+    }
+    
+    public static void eliminarJugador(jugador[] jugadores, int index) 
+    {
+        if (index < 0 || index >= jugadores.length)
+        {
+            System.out.println("Índice fuera de rango");
+            return;
+        }
+        
+        for (int i = index; i < jugadores.length - 1; i++)
+        {
+            jugadores[i] = jugadores[i + 1];
+        }
+    }
 
-    private byte[] readSocket(Socket cliente) {
+    private byte[] readSocket(Socket cliente) 
+    {
         byte[] socketMessage = null;
         try {
             BufferedInputStream bis = new BufferedInputStream(cliente.getInputStream());
@@ -313,8 +365,6 @@ class hiloLogin extends Thread {
 
 class jugador{
     private Socket socket;
-    private ObjectOutputStream out;
-    private ObjectInputStream in;
     private OutputStream os;
     private InputStream is;
     private String username;
@@ -322,28 +372,27 @@ class jugador{
     public jugador(Socket _socket, String _username) throws IOException 
     {
         socket = _socket;
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
         username = _username;
-        
+        os = socket.getOutputStream();
+        is = socket.getInputStream();
     }
 
     public Socket getSocket() {
         return socket;
-    }
-
-    public ObjectOutputStream getOOs() {
-        return out;
-    }
-
-    public ObjectInputStream getOIs() {
-        return in;
     }
     
     public OutputStream getOs() {
         return os;
     }
 
+    public ObjectOutputStream getOOs() throws IOException {
+        return new ObjectOutputStream(socket.getOutputStream());
+    }
+    
+    public ObjectInputStream getOIs() throws IOException {
+        return new ObjectInputStream(socket.getInputStream());
+    }
+    
     public InputStream getIs() {
         return is;
     }
@@ -363,6 +412,7 @@ class hiloPartida extends Thread {
     {
         p1 = _p1;
         p2 = _p2;
+        this.run();
     }
     
     @Override
