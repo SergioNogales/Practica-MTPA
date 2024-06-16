@@ -48,7 +48,7 @@ public class Servidor implements Runnable {
             boolean salir = false;
             Scanner scanner = new Scanner(System.in);
 
-            while (!salir) {
+            while (finish == 0) {
                 System.out.println("MENU SERVIDOR");
                 System.out.println("-------------");
                 System.out.println("1. Lista de Usuarios Conectados");
@@ -170,7 +170,8 @@ public class Servidor implements Runnable {
                         {
                             accepted = true;
                             output.write("reto aceptado".getBytes());
-                            output.write(retado.getUsername().getBytes());
+                            Thread.sleep(200);
+                            System.out.println("NOMBRE: " + retado.getUsername());
                             output.write(retado.getUsername().getBytes());
                             //hiloPartida hp = new hiloPartida(retador, retado)
                         }

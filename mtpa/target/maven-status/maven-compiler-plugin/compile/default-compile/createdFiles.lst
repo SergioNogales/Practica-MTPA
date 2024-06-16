@@ -1,3 +1,4 @@
+cliente\IUClienteReto$2.class
 cliente\IUClienteJugar$5.class
 cliente\IUClienteLogin.class
 servidor\Main.class
@@ -9,10 +10,12 @@ cliente\IUClienteJugar$8.class
 cliente\IUClienteLogin$1.class
 cliente\IUClienteRegistro$2.class
 cliente\IUClienteRegistro.class
+cliente\IUClienteReto.class
 cliente\IUClienteJugar$11.class
 cliente\IUClienteJugar$9.class
 servidor\hiloPartida.class
 cliente\IUClienteJugar$6.class
+cliente\IUClienteCola$4.class
 cliente\IUClienteJugar$1.class
 cliente\IUClienteJugar$4.class
 cliente\IUCliente1.class
@@ -28,3 +31,4 @@ servidor\jugador.class
 cliente\IUCliente1$1.class
 cliente\IUClienteCola.class
 cliente\IUClienteJugar$10.class
+cliente\IUClienteReto$1.class

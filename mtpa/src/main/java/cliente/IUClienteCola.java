@@ -74,7 +74,6 @@ public class IUClienteCola extends javax.swing.JFrame{
                     buffer = new char[1024];
                     length = in.read(buffer);
                     String usuarioReto = new String(buffer, 0, length).trim();
-                    System.out.println(usuarioReto);
                     IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioReto);
                     jugar.setVisible(true);
                     this.setVisible(false);
