@@ -30,7 +30,9 @@ public class Servidor implements Runnable {
     private OutputStream output;
     private InputStream input;
     private jugador[] jugadores = new jugador[100];
+    private ArrayList<hiloPartida> partidas = new ArrayList<>();
     private int playerCount = 0;
+    private int finish = 0;
     //NO IMPLEMENTAR ArrayList<hiloRegistro> hilosRegister = new ArrayList<>();
     
     public Servidor() throws IOException {
@@ -55,11 +57,25 @@ public class Servidor implements Runnable {
 
                 int opcion = scanner.nextInt();
 
-                switch (opcion) {
+                switch (opcion)
+                {
                     case 1:
-                        System.out.println("Lista de Usuarios Conectados (a implementar)");
+                        int contador = 1;
+                        for (jugador j : jugadores)
+                        {
+                            if (j != null) 
+                            {
+                                System.out.println(contador + ". " + j.getUsername());
+                                contador++;
+                            }
+                        }
+                        if(playerCount == 0)
+                        {
+                            System.out.println("No hay jugadores conectados");
+                        }
                         break;
                     case 2:
+                        finish = 1;
                         System.out.println("Parando servidor...\n\n");
                         servidor.close();
                         break;
@@ -70,7 +86,11 @@ public class Servidor implements Runnable {
             }  
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+    }        }
+
+    public int getFinish()
+    {
+        return finish;
     }
     
     public void initserver() {
@@ -114,7 +134,8 @@ public class Servidor implements Runnable {
                     input.read(buffer);
                     mensajeEntrante = new String(buffer).trim();
                     //Creamos el objeto jugador
-                    jugadores[playerCount] = (new jugador(sck, mensajeEntrante));
+                    jugador retador = new jugador(sck, mensajeEntrante);
+                    jugadores[playerCount] = (retador);
                     playerCount++;
                     StringBuilder arrayJugadoresString = new StringBuilder();
                     for (int i = 0; i < jugadores.length; i++) 
@@ -136,9 +157,6 @@ public class Servidor implements Runnable {
                         input.read(buffer);
                         mensajeEntrante = new String(buffer).trim();
                         jugador retado = buscarJugador(mensajeEntrante);
-                        input.read(buffer);
-                        mensajeEntrante = new String(buffer).trim();
-                        jugador retador = buscarJugador(mensajeEntrante);
                         InputStream isR = retado.getIs();
                         OutputStream osR = retado.getOs();
                         osR.write("reto".getBytes());
@@ -148,7 +166,7 @@ public class Servidor implements Runnable {
                         {
                             accepted = true;
                             output.write("reto aceptado".getBytes());
-                            new hiloPartida(retador, retado);
+                            hiloPartida hp = new hiloPartida(retador, retado);
                         }
                     }
                     break;
@@ -519,7 +537,7 @@ class hiloPartida extends Thread {
             //diagonal
             if(tablero[0][0] == tablero[1][1] && tablero[0][0] == tablero[2][2] && tablero[2][2] != 0)
             {
-                if(tablero[0][i] == 1)
+                if(tablero[0][0] == 1)
                 {
                     return "x";
                 }
@@ -530,7 +548,7 @@ class hiloPartida extends Thread {
             //diagonal opuesta
             if(tablero[0][2] == tablero[1][1] && tablero[0][2] == tablero[2][0] && tablero[0][2] != 0)
             {
-                if(tablero[0][i] == 1)
+                if(tablero[0][2] == 1)
                 {
                     return "x";
                 }
