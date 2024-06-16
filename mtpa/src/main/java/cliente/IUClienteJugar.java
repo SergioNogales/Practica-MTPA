@@ -29,8 +29,8 @@ public class IUClienteJugar extends javax.swing.JFrame {
     
     
     public IUClienteJugar(String usuario,String usuarioReto) throws IOException, ClassNotFoundException, InterruptedException {
-        this.oIs = new ObjectInputStream(socket.getInputStream());
-        this.oOs = new ObjectOutputStream(socket.getOutputStream());
+        //this.oIs = new ObjectInputStream(socket.getInputStream());
+        //this.oOs = new ObjectOutputStream(socket.getOutputStream());
         this.usuarioReto = usuarioReto;
         this.usuario= usuario;
         this.array = array;
@@ -39,7 +39,7 @@ public class IUClienteJugar extends javax.swing.JFrame {
         configureButtonListeners();
         jLabel3.setText(usuarioReto);
         
-        tablero = (int[][])oIs.readObject();
+        //tablero = (int[][])oIs.readObject();
     }
 
     

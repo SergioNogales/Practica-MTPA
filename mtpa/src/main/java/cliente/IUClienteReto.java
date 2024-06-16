@@ -18,7 +18,8 @@ public class IUClienteReto extends javax.swing.JFrame {
     private String usuarioReto;
     private String usuario;
     
-    public IUClienteReto(Socket socket, String usuarioReto, String usuario) { 
+    public IUClienteReto(Socket socket, String usuarioReto, String usuario,BufferedReader in,PrintWriter out) { 
+        
         this.usuarioReto = usuarioReto;
         this.usuario = usuario;
         this.socket = socket;
@@ -84,10 +85,19 @@ public class IUClienteReto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        out.println("reto aceptado");
-        IUPrueba jugar = new IUPrueba();
-        jugar.setVisible(true);
-        this.setVisible(false);
+        try {
+            out.println("");
+            out.println("reto aceptado");
+            IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioReto);
+            jugar.setVisible(true);
+            this.setVisible(false);
+        } catch (IOException ex) {
+            Logger.getLogger(IUClienteReto.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(IUClienteReto.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(IUClienteReto.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

@@ -65,16 +65,17 @@ public class IUClienteCola extends javax.swing.JFrame{
                     buffer = new char[1024];
                     length = in.read(buffer);
                     String usuarioReto = new String(buffer, 0, length).trim();
-                    IUClienteReto clienteReto = new IUClienteReto(socket, usuarioReto,usuario);
+                    IUClienteReto clienteReto = new IUClienteReto(socket, usuarioReto,usuario,in,out);
                     clienteReto.setVisible(true);
                     this.setVisible(false);
                     return;
                 }
                 if(response.equals("reto aceptado")){
-                    System.out.println("siu");
+                    buffer = new char[1024];
                     length = in.read(buffer);
                     String usuarioReto = new String(buffer, 0, length).trim();
-                    IUPrueba jugar = new IUPrueba();
+                    System.out.println(usuarioReto);
+                    IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioReto);
                     jugar.setVisible(true);
                     this.setVisible(false);
                 }

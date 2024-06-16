@@ -170,7 +170,9 @@ public class Servidor implements Runnable {
                         {
                             accepted = true;
                             output.write("reto aceptado".getBytes());
-                            hiloPartida hp = new hiloPartida(retador, retado);
+                            output.write(retado.getUsername().getBytes());
+                            output.write(retado.getUsername().getBytes());
+                            //hiloPartida hp = new hiloPartida(retador, retado)
                         }
                     }
                     break;
