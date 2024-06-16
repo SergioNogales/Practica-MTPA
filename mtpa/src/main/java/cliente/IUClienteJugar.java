@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -19,19 +21,25 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
+    private String usuarioReto;
     private String usuario;
+    private int[][] tablero;
+    private ObjectInputStream oIs;
+    private ObjectOutputStream oOs;
     
     
-    
-    public IUClienteJugar(String usuario) {
-        this.usuario = usuario;
+    public IUClienteJugar(String usuario,String usuarioReto) throws IOException, ClassNotFoundException, InterruptedException {
+        this.oIs = new ObjectInputStream(socket.getInputStream());
+        this.oOs = new ObjectOutputStream(socket.getOutputStream());
+        this.usuarioReto = usuarioReto;
+        this.usuario= usuario;
         this.array = array;
         initComponents();
         connectToServer();
         configureButtonListeners();
-        jLabel3.setText(usuario);
-        int[] array = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+        jLabel3.setText(usuarioReto);
         
+        tablero = (int[][])oIs.readObject();
     }
 
     
@@ -247,7 +255,7 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             JOptionPane.showMessageDialog(this, "Te rindes...");
-            IUClienteCola cola = new IUClienteCola(usuario);
+            IUClienteCola cola = new IUClienteCola(usuarioReto);
             cola.setVisible(true);
             this.setVisible(false);
         } catch (IOException | InterruptedException ex) {

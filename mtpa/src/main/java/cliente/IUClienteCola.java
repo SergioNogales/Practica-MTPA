@@ -1,50 +1,88 @@
-
 package cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 
-
-public class IUClienteCola extends javax.swing.JFrame {
+public class IUClienteCola extends javax.swing.JFrame{
 
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private String username;
+    private String usuario;
     private DefaultListModel<String> listModel;
 
-public IUClienteCola(String username) throws IOException, InterruptedException {
-    this.username = username;
-    initComponents();
-    connectToServer();
-    
-    out.println("jugar");
-    Thread.sleep(20);  // No es necesario hacer casting aquí
-    out.println(username);
-    
-    listModel = new DefaultListModel<>();
-    jList1.setModel(listModel);
-    
-    char[] buffer = new char[1024];
-    int length = in.read(buffer);
-    String jugadoresString = new String(buffer, 0, length).trim();
-    String[] jugadores = jugadoresString.split(","); // Suponiendo que el servidor envía nombres separados por comas
+    public IUClienteCola(String usuario) throws IOException, InterruptedException {
+        this.usuario = usuario;
+        initComponents();
+        connectToServer();
+        out.println("jugar");
+        Thread.sleep(20);
+        out.println(usuario);
+        
+        listModel = new DefaultListModel<>();
+        jList1.setModel(listModel);
+        
+        char[] buffer = new char[1024];
+        int length = in.read(buffer);
+        String jugadoresString = new String(buffer, 0, length).trim();
+        String[] jugadores = jugadoresString.split(",");
 
-    for (String jugador : jugadores) {
-        listModel.addElement(jugador);
+        for (String jugador : jugadores) {
+            listModel.addElement(jugador);
+        }
+        
+        jList1.repaint();
+        
+        // Inicia un hilo para escuchar mensajes del servidor
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    listenForMessages();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(IUClienteCola.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(IUClienteCola.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
     }
-    jList1.repaint();
-}
 
+    private void listenForMessages() throws ClassNotFoundException, InterruptedException {
+        try {
+            System.out.println("Escuchando...");
+            char[] buffer = new char[1024];
+            int length = in.read(buffer);
+            String response = new String(buffer, 0, length).trim();
+            while (response != null) {
+                if(response.equals("reto")){
+                    buffer = new char[1024];
+                    length = in.read(buffer);
+                    String usuarioReto = new String(buffer, 0, length).trim();
+                    IUClienteReto clienteReto = new IUClienteReto(socket, usuarioReto,usuario);
+                    clienteReto.setVisible(true);
+                    this.setVisible(false);
+                    return;
+                }
+                if(response.equals("reto aceptado")){
+                    System.out.println("siu");
+                    length = in.read(buffer);
+                    String usuarioReto = new String(buffer, 0, length).trim();
+                    IUPrueba jugar = new IUPrueba();
+                    jugar.setVisible(true);
+                    this.setVisible(false);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     
     
     @SuppressWarnings("unchecked")
@@ -128,22 +166,33 @@ public IUClienteCola(String username) throws IOException, InterruptedException {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String usuario = jList1.getSelectedValue();
-        if (usuario != null) {
-            JOptionPane.showMessageDialog(this, "Has seleccionado a " + usuario);
-            out.println("jugando");
-            IUClienteJugar jugar = new IUClienteJugar(usuario);
-            jugar.setVisible(true);
-            this.setVisible(false);
+        String usuarioReto = jList1.getSelectedValue();
+        if (usuarioReto != null) {
+            if (!usuarioReto.equals(usuario)) {
+                JOptionPane.showMessageDialog(this, "Has seleccionado a " + usuarioReto);
+                out.println(usuarioReto);
+            } else {
+                JOptionPane.showMessageDialog(this, "No puedes retarte a ti mismo.");
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario primero.");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        IUCliente1 c1 = new IUCliente1();
-        c1.setVisible(true);
-        this.setVisible(false);
+        try {
+            // Eliminar el nombre del usuario de la lista
+            listModel.removeElement(usuario);
+            jList1.repaint();
+            out.println("meboi");
+            Thread.sleep(20);
+            out.println(usuario);
+            IUCliente1 c1 = new IUCliente1();
+            c1.setVisible(true);
+            this.setVisible(false);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(IUClienteCola.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void connectToServer() {
@@ -164,6 +213,4 @@ public IUClienteCola(String username) throws IOException, InterruptedException {
     private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
-
-
 }

@@ -156,13 +156,17 @@ public class Servidor implements Runnable {
                     {
                         input.read(buffer);
                         mensajeEntrante = new String(buffer).trim();
-                        jugador retado = buscarJugador(mensajeEntrante);
+                        //jugador retado = buscarJugador(mensajeEntrante);
+                        jugador retado = jugadores[0];
                         InputStream isR = retado.getIs();
                         OutputStream osR = retado.getOs();
                         osR.write("reto".getBytes());
-                        isR.read(buffer);
-                        mensajeEntrante = new String(buffer).trim();
-                        if(mensajeEntrante == "reto aceptado")
+                        Thread.sleep(20);
+                        osR.write(retador.getUsername().getBytes());
+                        byte[] buffer1 = new byte[1024];
+                        isR.read(buffer1);
+                        mensajeEntrante = new String(buffer1).trim();
+                        if(mensajeEntrante.equals("reto aceptado"))
                         {
                             accepted = true;
                             output.write("reto aceptado".getBytes());
