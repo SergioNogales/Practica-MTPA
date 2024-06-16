@@ -129,8 +129,29 @@ public class Servidor implements Runnable {
                         }
                     }
                     output.write(arrayJugadoresString.toString().getBytes());
-                    System.out.println("username todos "+arrayJugadoresString);
-                    
+                    //llegará el username del rival a retar
+                    boolean accepted = false;
+                    while(!accepted)
+                    {
+                        input.read(buffer);
+                        mensajeEntrante = new String(buffer).trim();
+                        jugador rival = buscarJugador(mensajeEntrante);
+                        InputStream isR = rival.getIs();
+                        OutputStream osR = rival.getOs();
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //conversación retos
+                        if(mensajeEntrante == "reto aceptado")
+                        {
+                            buffer = new byte[1024];
+                            input.read(buffer);
+                            String player1 = new String(buffer).trim();
+                            input.read(buffer);
+                            String player2 = new String(buffer).trim();
+                            jugador p1 = buscarJugador(player1);
+                            jugador p2 = buscarJugador(player2);
+                            new hiloPartida(p1, p2);
+                        }
+                    }
                     break;
                     
                 case "meboi":
@@ -149,15 +170,8 @@ public class Servidor implements Runnable {
                     }
                     break;
                     
-                case "partida":
-                    buffer = new byte[1024];
-                    input.read(buffer);
-                    String player1 = new String(buffer).trim();
-                    input.read(buffer);
-                    String player2 = new String(buffer).trim();
-                    jugador p1 = buscarJugador(player1);
-                    jugador p2 = buscarJugador(player2);
-                    new hiloPartida(p1, p2);
+                case "reto aceptado":
+
                     break;
                     
                 default:
