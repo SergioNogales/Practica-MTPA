@@ -1,4 +1,3 @@
-
 package cliente;
 
 import java.awt.event.ActionEvent;
@@ -16,19 +15,18 @@ import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 
 /**
- * IUClienteJugar2 es la otra interfaz gráfica de usuario para el juego de Tres en raya.
+ * IUClienteJugar es una interfaz gráfica de usuario para el juego de Tres en raya.
  * Permite a los usuarios jugar contra otro usuario conectado al mismo servidor.
  */
 public class IUClienteJugar2 extends javax.swing.JFrame {
-    private int[] array = new int[9];
+    private String muevo;
+    private int[][] tablero = new int[3][3];
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private String usuarioReto;
     private String usuario;
-    private int[][] tablero;
-    private ObjectInputStream oIs;
-    private ObjectOutputStream oOs;
+    private int token = 2;
     
     /**
      * Constructor de la clase IUClienteJugar.
@@ -43,13 +41,108 @@ public class IUClienteJugar2 extends javax.swing.JFrame {
         //this.oOs = new ObjectOutputStream(socket.getOutputStream());
         this.usuarioReto = usuarioReto;
         this.usuario= usuario;
-        this.array = array;
         initComponents();
         connectToServer();
-        configureButtonListeners();
-        jLabel3.setText(usuario);
+        jLabel3.setText(usuarioReto);
         
         //tablero = (int[][])oIs.readObject();
+        // Inicia un hilo para escuchar mensajes del servidor
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    listenForMessages();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(IUClienteCola.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(IUClienteCola.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Método para escuchar los mensajes del servidor.
+     * Maneja los tableros.
+     * @throws ClassNotFoundException Si ocurre un error al cargar una clase que no existe.
+     * @throws InterruptedException Si ocurre una interrupción mientras se espera la respuesta del servidor.
+     */
+    private void listenForMessages() throws ClassNotFoundException, InterruptedException {
+    while (true) {
+        muevo = "noMuevo";
+        try {
+            System.out.println("Escuchando...");
+            char[] buffer = new char[1024];
+            int length = in.read(buffer);
+            String response = new String(buffer, 0, length).trim();
+            while (response != null) {
+                if (response.contains("mueve")) {
+                    // Recibir tablero
+                    actualizarTableroVisual();
+                    habilitarBotones(true);
+                    muevo = "mueve";
+                    break;
+                }
+                if (response.contains("X")) {
+                    JOptionPane.showMessageDialog(this, "Ganaste!!");
+                    IUClienteCola cola = new IUClienteCola(usuario);
+                    cola.setVisible(true);
+                    this.setVisible(false);
+                    response = null;
+                    break;
+                }
+                if (response.contains("O")) {
+                    JOptionPane.showMessageDialog(this, "Perdiste :(");
+                    IUClienteCola cola = new IUClienteCola(usuario);
+                    cola.setVisible(true);
+                    this.setVisible(false);
+                    response = null;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    }
+    
+    
+    private void actualizarTableroVisual() {
+        JToggleButton[] botones = {
+            jToggleButton1, jToggleButton2, jToggleButton3,
+            jToggleButton5, jToggleButton6,
+            jToggleButton7, jToggleButton8, jToggleButton9, jToggleButton10
+        };
+
+        int index = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (tablero[i][j] == 1) {
+                    botones[index].setText("X");
+                    botones[index].setEnabled(false);
+                } else if (tablero[i][j] == 2) {
+                    botones[index].setText("O");
+                    botones[index].setEnabled(false);
+                } else {
+                    botones[index].setText("");
+                    botones[index].setEnabled(true);
+                }
+                index++;
+            }
+        }
+    }
+    
+    private void habilitarBotones(boolean habilitar) {
+        JToggleButton[] botones = {
+            jToggleButton1, jToggleButton2, jToggleButton3,
+            jToggleButton5, jToggleButton6,
+            jToggleButton7, jToggleButton8, jToggleButton9, jToggleButton10
+        };
+
+        for (JToggleButton boton : botones) {
+            if (boton.getText().isEmpty()) { // Solo habilitar botones vacíos
+                boton.setEnabled(habilitar);
+            }
+        }
     }
 
     /**
@@ -254,47 +347,84 @@ public class IUClienteJugar2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
-        try{
-            char[] buffer = new char[1024];
-            int length = in.read(buffer);
-            String response = new String(buffer, 0, length).trim();
-            int token = Integer.parseInt(response);
-            array[0]=token;
-        }catch(IOException e){
-            System.out.println("Error...");
+        if ("mueve".equals(muevo)) {
+            tablero[0][0] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
         }
     }//GEN-LAST:event_jToggleButton1ActionPerformed
 
     private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[0][1] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton5ActionPerformed
 
     private void jToggleButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton8ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[0][1] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton8ActionPerformed
 
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-
+        if ("mueve".equals(muevo)) {
+            tablero[1][0] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton2ActionPerformed
 
     private void jToggleButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton6ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+                tablero[1][1] = token;  
+                enviarMovimiento(0, 0);
+                muevo = "heMovido";
+                habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton6ActionPerformed
 
     private void jToggleButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton9ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[1][2] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton9ActionPerformed
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[2][0] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton3ActionPerformed
 
     private void jToggleButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton7ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[2][1] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton7ActionPerformed
 
     private void jToggleButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton10ActionPerformed
-        // TODO add your handling code here:
+        if ("mueve".equals(muevo)) {
+            tablero[2][2] = token;  
+            enviarMovimiento(0, 0);
+            muevo = "heMovido";
+            habilitarBotones(false);
+        }
     }//GEN-LAST:event_jToggleButton10ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -308,6 +438,10 @@ public class IUClienteJugar2 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void enviarMovimiento(int fila, int columna) {
+        out.println("movimiento:" + fila + "," + columna);
+    }
+    
     /**
      * Conecta al cliente con el servidor.
      */
@@ -318,26 +452,6 @@ public class IUClienteJugar2 extends javax.swing.JFrame {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-    
-    /**
-     * Configura los listeners para los botones de la interfaz gráfica.
-     */
-    private void configureButtonListeners() {
-        // Array of all toggle buttons
-        JToggleButton[] buttons = {jToggleButton1, jToggleButton2, jToggleButton3,
-        jToggleButton5, jToggleButton6, jToggleButton7, jToggleButton8,jToggleButton9
-        , jToggleButton10};
-        
-        // Add ActionListener to each button
-        for (JToggleButton button : buttons) {
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    button.setText("O");
-                }
-            });
         }
     }
 
