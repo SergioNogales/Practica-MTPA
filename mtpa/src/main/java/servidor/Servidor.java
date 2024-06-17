@@ -194,23 +194,24 @@ public class Servidor implements Runnable {
                     {
                         input.read(buffer);
                         mensajeEntrante = new String(buffer).trim();
-                        jugador retado = jugadores[0];
-                        retado = buscarJugador(mensajeEntrante);
-                        InputStream isR = retado.getIs();
-                        OutputStream osR = retado.getOs();
-                        osR.write("reto".getBytes());
-                        Thread.sleep(20);
-                        osR.write(retador.getUsername().getBytes());
-                        byte[] buffer1 = new byte[1024];
-                        isR.read(buffer1);
-                        mensajeEntrante = new String(buffer1).trim();
-                        if(mensajeEntrante.equals("reto aceptado"))
+                        if(mensajeEntrante.contains("reto aceptado"))
                         {
-                            accepted = true;
-                            output.write("reto aceptado".getBytes());
-                            Thread.sleep(200);
-                            output.write(retado.getUsername().getBytes());
+                            System.out.println("RETO ACEPTADO");
+                            String[] param = mensajeEntrante.split(";");
+                            jugador retado = buscarJugador(param[1]);
+                            retador = buscarJugador(param[2]);
+                            output = retado.getOs();
+                            output.write(mensajeEntrante.getBytes());
                             partidas.add(new hiloPartida(retador, retado));
+                            accepted = true;
+                        }
+                        if(mensajeEntrante.contains("reto"))
+                        {
+                            System.out.println("RETADO");
+                            String[] param = mensajeEntrante.split(";");
+                            jugador retado = buscarJugador(param[1]);
+                            OutputStream osR = retado.getOs();
+                            osR.write(mensajeEntrante.getBytes());
                         }
                     }
                     break;
