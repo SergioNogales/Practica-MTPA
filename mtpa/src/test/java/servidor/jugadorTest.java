@@ -1,9 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package servidor;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,15 +13,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
- *
- * @author Sergio
+ * Pruebas unitarias para la clase jugador.
  */
 public class jugadorTest {
     
-    public jugadorTest() {
-    }
+    private Socket socketMock;
+    private jugador instance;
     
     @BeforeAll
     public static void setUpClass() {
@@ -34,93 +32,65 @@ public class jugadorTest {
     }
     
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        // Crear un socket falso usando Mockito
+        socketMock = mock(Socket.class);
+        
+        // Configurar el comportamiento del socket para devolver flujos de entrada y salida falsos
+        when(socketMock.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        when(socketMock.getOutputStream()).thenReturn(new ByteArrayOutputStream());
+        
+        // Crear una instancia de jugador con el socket falso
+        instance = new jugador(socketMock, "testUser");
     }
     
     @AfterEach
     public void tearDown() {
+        instance = null;
     }
 
-    /**
-     * Test of getSocket method, of class jugador.
-     */
     @Test
     public void testGetSocket() {
         System.out.println("getSocket");
-        jugador instance = null;
-        Socket expResult = null;
-        Socket result = null;
-        assertEquals(expResult, result);
-        fail("The test case is a prototype.");
+        Socket result = instance.getSocket();
+        assertEquals(socketMock, result);
     }
 
-    /**
-     * Test of getOs method, of class jugador.
-     */
     @Test
-    public void testGetOs() {
+    public void testGetOs() throws Exception {
         System.out.println("getOs");
-        jugador instance = null;
-        OutputStream expResult = null;
         OutputStream result = instance.getOs();
-        assertEquals(expResult, result);
-        fail("The test case is a prototype.");
+        assertNotNull(result);
+        assertTrue(result instanceof ByteArrayOutputStream);
     }
 
-    /**
-     * Test of getOOs method, of class jugador.
-     */
     @Test
     public void testGetOOs() throws Exception {
         System.out.println("getOOs");
-        jugador instance = null;
-        ObjectOutputStream expResult = null;
         ObjectOutputStream result = instance.getOOs();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
     }
 
-    /**
-     * Test of getOIs method, of class jugador.
-     */
     @Test
     public void testGetOIs() throws Exception {
         System.out.println("getOIs");
-        jugador instance = null;
-        ObjectInputStream expResult = null;
         ObjectInputStream result = instance.getOIs();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
     }
 
-    /**
-     * Test of getIs method, of class jugador.
-     */
     @Test
-    public void testGetIs() {
+    public void testGetIs() throws Exception {
         System.out.println("getIs");
-        jugador instance = null;
-        InputStream expResult = null;
         InputStream result = instance.getIs();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
+        assertTrue(result instanceof ByteArrayInputStream);
     }
 
-    /**
-     * Test of getUsername method, of class jugador.
-     */
     @Test
     public void testGetUsername() {
         System.out.println("getUsername");
-        jugador instance = null;
-        String expResult = "";
+        String expResult = "testUser";
         String result = instance.getUsername();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
-    
 }

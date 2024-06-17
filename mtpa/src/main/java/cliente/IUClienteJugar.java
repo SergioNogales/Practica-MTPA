@@ -77,6 +77,8 @@ public class IUClienteJugar extends javax.swing.JFrame {
             while (response != null) {
                 if (response.contains("mueve")) {
                     // Recibir tablero
+                    ObjectInputStream oIs = new ObjectInputStream(socket.getInputStream());
+                    tablero  = (int[][]) oIs.readObject();
                     habilitarBotones(true);
                     muevo = "mueve";
                     break;
@@ -363,7 +365,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[1][0] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -383,7 +389,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[0][1] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -392,7 +402,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton8ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[0][2] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -401,7 +415,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[0][0] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -410,7 +428,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton6ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[1][1] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -419,7 +441,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton9ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[1][2] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -428,7 +454,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[2][0] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -437,7 +467,11 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton7ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[2][1] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
@@ -446,14 +480,19 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private void jToggleButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton10ActionPerformed
         if ("mueve".equals(muevo)) {
             tablero[2][2] = token;  
-            enviarMovimiento(0, 0);
+            try {
+                enviarMovimiento(0, 0);
+            } catch (IOException ex) {
+                Logger.getLogger(IUClienteJugar.class.getName()).log(Level.SEVERE, null, ex);
+            }
             muevo = "heMovido";
             habilitarBotones(false);
         }
     }//GEN-LAST:event_jToggleButton10ActionPerformed
     
-    private void enviarMovimiento(int fila, int columna) {
-        out.println("movimiento:" + fila + "," + columna);
+    private void enviarMovimiento(int fila, int columna) throws IOException {
+        ObjectOutputStream oOs = new ObjectOutputStream(socket.getOutputStream());
+        oOs.writeObject(tablero);
     }
     
     /**

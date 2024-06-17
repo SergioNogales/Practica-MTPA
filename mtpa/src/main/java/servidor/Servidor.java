@@ -196,7 +196,6 @@ public class Servidor implements Runnable {
                         mensajeEntrante = new String(buffer).trim();
                         if(mensajeEntrante.contains("reto aceptado"))
                         {
-                            System.out.println("RETO ACEPTADO");
                             String[] param = mensajeEntrante.split(";");
                             jugador retado = buscarJugador(param[1]);
                             retador = buscarJugador(param[2]);
@@ -206,7 +205,6 @@ public class Servidor implements Runnable {
                         }
                         if(mensajeEntrante.contains("reto;"))
                         {
-                            System.out.println("RETADO");
                             String[] param = mensajeEntrante.split(";");
                             jugador retado = buscarJugador(param[1]);
                             OutputStream osR = retado.getOs();
