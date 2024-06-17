@@ -24,7 +24,7 @@ public class IUClienteReto extends javax.swing.JFrame {
     /**
      * Constructor de IUClienteReto.
      * @param socket El socket de conexión.
-     * @param usuarioReto El nombre del usuario que lanza el reto.
+     * @param usuarioRetado El nombre del usuario que lanza el reto.
      * @param usuario El nombre del usuario retado.
      * @param in El BufferedReader para leer del socket.
      * @param out El PrintWriter para escribir en el socket.
