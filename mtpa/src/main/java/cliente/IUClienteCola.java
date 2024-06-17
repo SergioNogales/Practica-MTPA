@@ -1,4 +1,4 @@
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,32 +70,37 @@ public class IUClienteCola extends javax.swing.JFrame{
      * @throws InterruptedException Si ocurre una interrupción mientras se espera la respuesta del servidor.
      */
     private void listenForMessages() throws ClassNotFoundException, InterruptedException {
-        try {
+        while(true){
+            try {
             System.out.println("Escuchando...");
             char[] buffer = new char[1024];
             int length = in.read(buffer);
             String response = new String(buffer, 0, length).trim();
+            System.out.println(response);
             while (response != null) {
-                if(response.equals("reto")){
-                    buffer = new char[1024];
-                    length = in.read(buffer);
-                    String usuarioReto = new String(buffer, 0, length).trim();
-                    IUClienteReto clienteReto = new IUClienteReto(socket, usuarioReto,usuario,in,out);
+                if(response.contains("reto;")){
+                    String[] param = response.split(";");
+                    String usuarioRetado = param[1];
+                    usuario = param[2];
+                    IUClienteReto clienteReto = new IUClienteReto(socket, usuarioRetado,usuario,in,out);
                     clienteReto.setVisible(true);
                     this.setVisible(false);
                     return;
                 }
-                if(response.equals("reto aceptado")){
-                    buffer = new char[1024];
-                    length = in.read(buffer);
-                    String usuarioReto = new String(buffer, 0, length).trim();
-                    IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioReto);
+                if(response.contains("reto aceptado")){
+                    System.out.println("Entra");
+                    String[] param = response.split(";");
+                    String usuarioRetado = param[1];
+                    usuario = param[2];
+                    Thread.sleep(20);
+                    IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioRetado);
                     jugar.setVisible(true);
                     this.setVisible(false);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -191,7 +196,7 @@ public class IUClienteCola extends javax.swing.JFrame{
         if (usuarioReto != null) {
             if (!usuarioReto.equals(usuario)) {
                 JOptionPane.showMessageDialog(this, "Has seleccionado a " + usuarioReto);
-                out.println(usuarioReto);
+                out.println("reto;" + usuarioReto +";"+ usuario);
             } else {
                 JOptionPane.showMessageDialog(this, "No puedes retarte a ti mismo.");
             }

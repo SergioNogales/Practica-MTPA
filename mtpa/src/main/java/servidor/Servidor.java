@@ -1,4 +1,4 @@
-package servidor;
+package Servidor;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -255,7 +255,7 @@ public class Servidor implements Runnable {
     {
         for(int i = 0; i < playerCount; i++)
         {
-            System.out.println(jugadores[i].getUsername() + "," + username);
+            //System.out.println(jugadores[i].getUsername() + "," + username);
             if(username.equals(jugadores[i].getUsername()))
             {
                 return jugadores[i];
@@ -772,7 +772,7 @@ class hiloPartida extends Thread {
         }
     }
     
- public void registrarResultado(String username, char resultado) {
+    public void registrarResultado(String username, char resultado) {
         String filePath = "./TresEnRaya/registro.txt";
         ArrayList<String> lines = new ArrayList<>();
 

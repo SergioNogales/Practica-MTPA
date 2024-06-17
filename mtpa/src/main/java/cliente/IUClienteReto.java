@@ -1,4 +1,4 @@
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class IUClienteReto extends javax.swing.JFrame {
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
-    private String usuarioReto;
+    private String usuarioRetado;
     private String usuario;
     
     /**
@@ -29,9 +29,9 @@ public class IUClienteReto extends javax.swing.JFrame {
      * @param in El BufferedReader para leer del socket.
      * @param out El PrintWriter para escribir en el socket.
      */
-    public IUClienteReto(Socket socket, String usuarioReto, String usuario,BufferedReader in,PrintWriter out) { 
+    public IUClienteReto(Socket socket, String usuarioRetado, String usuario,BufferedReader in,PrintWriter out) { 
         
-        this.usuarioReto = usuarioReto;
+        this.usuarioRetado = usuarioRetado;
         this.usuario = usuario;
         this.socket = socket;
         initComponents();
@@ -101,9 +101,8 @@ public class IUClienteReto extends javax.swing.JFrame {
      */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            out.println("");
-            out.println("reto aceptado");
-            IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioReto);
+            out.println("reto aceptado;" + usuarioRetado + ";" + usuario);
+            IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioRetado);
             jugar.setVisible(true);
             this.setVisible(false);
         } catch (IOException ex) {
@@ -122,7 +121,7 @@ public class IUClienteReto extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             JOptionPane.showMessageDialog(this, "Reto rechazado...");
-            IUClienteCola cola = new IUClienteCola(usuarioReto);
+            IUClienteCola cola = new IUClienteCola(usuarioRetado);
             cola.setVisible(true);
             this.setVisible(false);
         } catch (IOException ex) {
