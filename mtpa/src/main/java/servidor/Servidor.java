@@ -771,4 +771,41 @@ class hiloPartida extends Thread {
             e.printStackTrace();
         }
     }
+    
+ public void registrarResultado(String username, char resultado) {
+        String filePath = "./TresEnRaya/registro.txt";
+        ArrayList<String> lines = new ArrayList<>();
+
+        // Leer el archivo y almacenar su contenido en una lista
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts[0].equals(username)) {
+                    int victorias = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
+                    int derrotas = parts.length > 3 ? Integer.parseInt(parts[3]) : 0;
+                    if (resultado == 'V') {
+                        victorias++;
+                    } else if (resultado == 'L') {
+                        derrotas++;
+                    }
+                    lines.add(parts[0] + ";" + parts[1] + ";" + victorias + ";" + derrotas);
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Escribir el contenido actualizado de nuevo en el archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String line : lines) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
