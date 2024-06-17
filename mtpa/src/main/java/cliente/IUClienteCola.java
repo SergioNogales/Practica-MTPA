@@ -1,4 +1,4 @@
-package Cliente;
+package cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -76,7 +76,6 @@ public class IUClienteCola extends javax.swing.JFrame{
             char[] buffer = new char[1024];
             int length = in.read(buffer);
             String response = new String(buffer, 0, length).trim();
-            System.out.println(response);
             while (response != null) {
                 if(response.contains("reto;")){
                     String[] param = response.split(";");
@@ -88,14 +87,13 @@ public class IUClienteCola extends javax.swing.JFrame{
                     return;
                 }
                 if(response.contains("reto aceptado")){
-                    System.out.println("Entra");
                     String[] param = response.split(";");
                     String usuarioRetado = param[1];
                     usuario = param[2];
-                    Thread.sleep(20);
-                    IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioRetado);
-                    jugar.setVisible(true);
+                    IUClienteJugar2 jugar2 = new IUClienteJugar2(usuario,usuarioRetado);
+                    jugar2.setVisible(true);
                     this.setVisible(false);
+                    response = null;
                 }
             }
             } catch (IOException e) {

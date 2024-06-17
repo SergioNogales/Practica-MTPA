@@ -1,4 +1,4 @@
-package Servidor;
+package servidor;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -200,12 +200,11 @@ public class Servidor implements Runnable {
                             String[] param = mensajeEntrante.split(";");
                             jugador retado = buscarJugador(param[1]);
                             retador = buscarJugador(param[2]);
-                            output = retado.getOs();
                             output.write(mensajeEntrante.getBytes());
                             partidas.add(new hiloPartida(retador, retado));
                             accepted = true;
                         }
-                        if(mensajeEntrante.contains("reto"))
+                        if(mensajeEntrante.contains("reto;"))
                         {
                             System.out.println("RETADO");
                             String[] param = mensajeEntrante.split(";");
@@ -753,11 +752,22 @@ class hiloPartida extends Thread {
         return "no";
     }
     
+    /**
+    * Devuelve una representación en forma de cadena de la partida,
+    * incluyendo los nombres de usuario de los dos jugadores y el estado de la partida.
+    *
+    * @return una cadena con la información de la partida.
+    */
     public String toString()
     {
         return "Jugador1:" + p1.getUsername() + "Jugador2:" +  p2.getUsername() + "Estado Partida:" +  estado;
     }
     
+    /**
+    * Registra la información de una partida en un archivo de texto.
+    *
+    * @param hp el objeto hiloPartida que contiene la información de la partida.
+    */
     public void registrarPartida(hiloPartida hp) 
     {
         String filePath = "./TresEnRaya/partida.txt";
@@ -772,6 +782,13 @@ class hiloPartida extends Thread {
         }
     }
     
+    /**
+    * Registra el resultado de una partida para un usuario en un archivo de texto.
+    * Actualiza el número de victorias o derrotas del usuario según el resultado.
+    *
+    * @param username el nombre de usuario del jugador.
+    * @param resultado el resultado de la partida ('V' para victoria, 'L' para derrota).
+    */
     public void registrarResultado(String username, char resultado) {
         String filePath = "./TresEnRaya/registro.txt";
         ArrayList<String> lines = new ArrayList<>();

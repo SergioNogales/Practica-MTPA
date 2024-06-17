@@ -1,4 +1,4 @@
-package Cliente;
+package cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -102,6 +102,7 @@ public class IUClienteReto extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             out.println("reto aceptado;" + usuarioRetado + ";" + usuario);
+            Thread.sleep(200);
             IUClienteJugar jugar = new IUClienteJugar(usuario,usuarioRetado);
             jugar.setVisible(true);
             this.setVisible(false);
