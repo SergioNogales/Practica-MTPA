@@ -1,4 +1,4 @@
-package Servidor;
+package servidor;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -56,14 +56,14 @@ public class Servidor implements Runnable {
      */
     public void run() {
         try {
-            boolean salir = false;
             Scanner scanner = new Scanner(System.in);
 
             while (finish == 0) {
-                System.out.println("MENU SERVIDOR");
+                System.out.println("\n\nMENU SERVIDOR");
                 System.out.println("-------------");
                 System.out.println("1. Lista de Usuarios Conectados");
                 System.out.println("2. Parar el servidor");
+                System.out.println("3. Informacion Partidas");
                 System.out.print("Seleccione una opcion: ");
 
                 int opcion = scanner.nextInt();
@@ -90,14 +90,28 @@ public class Servidor implements Runnable {
                         System.out.println("Parando servidor...\n\n");
                         servidor.close();
                         break;
+                    case 3:
+                        contador = 1;
+                        for(int i = 0; i < partidas.size(); i++)
+                        {
+                            System.out.println(contador + ". " + partidas.get(i).toString());
+                            contador++;
+                        }
+                        if(contador == 1)
+                        {
+                            System.out.println("No se han jugado partidas todavia");
+                        }
+                        break;
                     default:
                         System.out.println("Opción no válida. Por favor, seleccione una opción del menú.");
                         break;
                 }
             }  
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
-    }        }
+        }        
+    }
+
     
     /**
      * Obtiene el estado del servidor.
@@ -180,8 +194,8 @@ public class Servidor implements Runnable {
                     {
                         input.read(buffer);
                         mensajeEntrante = new String(buffer).trim();
-                        //jugador retado = buscarJugador(mensajeEntrante);
                         jugador retado = jugadores[0];
+                        retado = buscarJugador(mensajeEntrante);
                         InputStream isR = retado.getIs();
                         OutputStream osR = retado.getOs();
                         osR.write("reto".getBytes());
@@ -195,9 +209,8 @@ public class Servidor implements Runnable {
                             accepted = true;
                             output.write("reto aceptado".getBytes());
                             Thread.sleep(200);
-                            System.out.println("NOMBRE: " + retado.getUsername());
                             output.write(retado.getUsername().getBytes());
-                            //hiloPartida hp = new hiloPartida(retador, retado)
+                            partidas.add(new hiloPartida(retador, retado));
                         }
                     }
                     break;
@@ -239,9 +252,10 @@ public class Servidor implements Runnable {
      */
     public jugador buscarJugador(String username) throws IOException
     {
-        for(int i = 0; i<playerCount; i++)
+        for(int i = 0; i < playerCount; i++)
         {
-            if(jugadores[i].getUsername() == username)
+            System.out.println(jugadores[i].getUsername() + "," + username);
+            if(username.equals(jugadores[i].getUsername()))
             {
                 return jugadores[i];
             }
@@ -260,7 +274,6 @@ public class Servidor implements Runnable {
     {
         if (index < 0 || index >= jugadores.length)
         {
-            System.out.println("Índice fuera de rango");
             return;
         }
         
@@ -575,6 +588,7 @@ class hiloPartida extends Thread {
     private jugador p1;
     private jugador p2;
     private int[][] tablero = new int[3][3];
+    private String estado;
     
     /**
      * Construye un nuevo hilo hiloPartida.
@@ -603,11 +617,13 @@ class hiloPartida extends Thread {
                 turno(p1);
                 if(comprobador() == true)
                 {
+                    registrarPartida(this);
                     return;
                 }
                 turno(p2);
                 if(comprobador() == true)
                 {
+                    registrarPartida(this);
                     return;
                 }
             } catch (IOException ex) {
@@ -629,10 +645,12 @@ class hiloPartida extends Thread {
         {
             switch (comprobador(tablero)){
                 case "x":{
+                    estado = "Ganó x | " + p1.getUsername();
                     p1.getOs().write("x".getBytes());
                     p2.getOs().write("x".getBytes());
                 }
                 case "o":{
+                    estado = "Ganó o | " + p2.getUsername();
                     p1.getOs().write("o".getBytes());
                     p2.getOs().write("o".getBytes());
                 }
@@ -652,9 +670,17 @@ class hiloPartida extends Thread {
      */
     public void turno (jugador player) throws IOException, ClassNotFoundException
     {
-        player.getOs().write("mueve".getBytes());
-        player.getOOs().writeObject(tablero);
-        tablero = (int[][])player.getOIs().readObject();
+        try
+        {
+            player.getOs().write("mueve".getBytes());
+            player.getOOs().writeObject(tablero);
+            tablero = (int[][])player.getOIs().readObject();
+        }
+        catch(Exception e)
+        {
+            p1.getSocket().close();
+            p2.getSocket().close();
+        }
     }
     
     /**
@@ -724,5 +750,24 @@ class hiloPartida extends Thread {
             }
         }
         return "no";
+    }
+    
+    public String toString()
+    {
+        return "Jugador1:" + p1.getUsername() + "Jugador2:" +  p2.getUsername() + "Estado Partida:" +  estado;
+    }
+    
+    public void registrarPartida(hiloPartida hp) 
+    {
+        String filePath = "./TresEnRaya/partida.txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) 
+        {
+            writer.write(hp.toString());
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }
