@@ -1,5 +1,5 @@
 
-package cliente;
+package Cliente;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +15,10 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 
-
+/**
+ * IUClienteJugar es una interfaz gráfica de usuario para el juego de Tres en raya.
+ * Permite a los usuarios jugar contra otro usuario conectado al mismo servidor.
+ */
 public class IUClienteJugar extends javax.swing.JFrame {
     private int[] array = new int[9];
     private Socket socket;
@@ -27,7 +30,14 @@ public class IUClienteJugar extends javax.swing.JFrame {
     private ObjectInputStream oIs;
     private ObjectOutputStream oOs;
     
-    
+    /**
+     * Constructor de la clase IUClienteJugar.
+     * @param usuario Nombre de usuario del jugador actual.
+     * @param usuarioReto Nombre de usuario del oponente.
+     * @throws IOException Si ocurre un error de entrada/salida al conectarse al servidor.
+     * @throws ClassNotFoundException Si no se encuentra la clase solicitada en la deserialización.
+     * @throws InterruptedException Si ocurre una interrupción mientras se espera la conexión.
+     */
     public IUClienteJugar(String usuario,String usuarioReto) throws IOException, ClassNotFoundException, InterruptedException {
         //this.oIs = new ObjectInputStream(socket.getInputStream());
         //this.oOs = new ObjectOutputStream(socket.getOutputStream());
@@ -303,6 +313,9 @@ public class IUClienteJugar extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jToggleButton10ActionPerformed
     
+    /**
+     * Conecta al cliente con el servidor.
+     */
     private void connectToServer() {
         try {
             socket = new Socket("localhost", 7894);
@@ -313,6 +326,9 @@ public class IUClienteJugar extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Configura los listeners para los botones de la interfaz gráfica.
+     */
     private void configureButtonListeners() {
         // Array of all toggle buttons
         JToggleButton[] buttons = {jToggleButton1, jToggleButton2, jToggleButton3, jToggleButton4,

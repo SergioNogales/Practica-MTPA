@@ -1,5 +1,5 @@
 
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,13 +12,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-
+/**
+ * IUClienteRegistro representa la interfaz de usuario para el registro de nuevos usuarios.
+ */
 public class IUClienteRegistro extends javax.swing.JFrame {
     
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
+    /**
+     * Constructor de IUClienteRegistro.
+     * @param socket El socket de conexión.
+     */
     public IUClienteRegistro(Socket socket) {
         this.socket = socket;
         initComponents();
@@ -106,6 +112,10 @@ public class IUClienteRegistro extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
+    /**
+     * Maneja el evento de registro.
+     * @param evt El evento de acción.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String username = jTextField1.getText();
         String password = new String(jPasswordField1.getPassword());
@@ -147,6 +157,9 @@ public class IUClienteRegistro extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Establece la conexión con el servidor.
+     */
     private void conexionServidor() {
         try {
             out = new PrintWriter(socket.getOutputStream(), true);

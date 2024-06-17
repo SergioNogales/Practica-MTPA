@@ -1,5 +1,5 @@
 
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,13 +9,20 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * IUCliente1 es la clase que representa la interfaz gráfica inicial del cliente.
+ * Permite al usuario elegir entre iniciar sesión o registrarse.
+ */
 public class IUCliente1 extends javax.swing.JFrame {
     
     private PrintWriter out;
     private BufferedReader in;
     private Socket socket;
     
+    /**
+     * Constructor de la clase IUCliente1.
+     * Inicializa los componentes y se conecta al servidor.
+     */
     public IUCliente1() {
         initComponents();
         connectToServer();
@@ -78,6 +85,11 @@ public class IUCliente1 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Método ejecutado cuando se hace clic en el botón "Iniciar Sesión".
+     * Envía una solicitud de inicio de sesión al servidor y muestra la interfaz de login.
+     * @param evt Evento de acción que activa este método.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         out.println("login");
         IUClienteLogin login = new IUClienteLogin(socket);
@@ -85,6 +97,11 @@ public class IUCliente1 extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Método ejecutado cuando se hace clic en el botón "Registrarse".
+     * Envía una solicitud de registro al servidor y muestra la interfaz de registro.
+     * @param evt Evento de acción que activa este método.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         out.println("register");
         IUClienteRegistro registro = new IUClienteRegistro(socket);
@@ -92,13 +109,11 @@ public class IUCliente1 extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-
+    /**
+     * Método principal para ejecutar la aplicación.
+     * @param args Argumentos de la línea de comandos.
+     */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -131,6 +146,9 @@ public class IUCliente1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Conecta al cliente con el servidor.
+     */
     private void connectToServer() {
         try {
             socket = new Socket("localhost", 7894);

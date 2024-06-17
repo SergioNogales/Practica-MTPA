@@ -1,5 +1,5 @@
 
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
+/**
+ * IUClienteReto representa la interfaz de usuario que maneja el reto de un jugador.
+ * Esta ventana permite al usuario aceptar o rechazar el reto.
+ */
 public class IUClienteReto extends javax.swing.JFrame {
 
     private Socket socket;
@@ -18,6 +22,14 @@ public class IUClienteReto extends javax.swing.JFrame {
     private String usuarioReto;
     private String usuario;
     
+    /**
+     * Constructor de IUClienteReto.
+     * @param socket El socket de conexión.
+     * @param usuarioReto El nombre del usuario que lanza el reto.
+     * @param usuario El nombre del usuario retado.
+     * @param in El BufferedReader para leer del socket.
+     * @param out El PrintWriter para escribir en el socket.
+     */
     public IUClienteReto(Socket socket, String usuarioReto, String usuario,BufferedReader in,PrintWriter out) { 
         
         this.usuarioReto = usuarioReto;
@@ -84,6 +96,10 @@ public class IUClienteReto extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Maneja el evento de aceptar el reto.
+     * @param evt El evento de acción.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             out.println("");
@@ -100,6 +116,10 @@ public class IUClienteReto extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Maneja el evento de rechazar el reto.
+     * @param evt El evento de acción.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             JOptionPane.showMessageDialog(this, "Reto rechazado...");
@@ -113,6 +133,9 @@ public class IUClienteReto extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    /**
+     * Establece la conexión con el servidor.
+     */
     private void conexionServidor() {
         try {
             out = new PrintWriter(socket.getOutputStream(), true);

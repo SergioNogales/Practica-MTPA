@@ -1,4 +1,4 @@
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-
+/**
+ * IUClienteCola es una interfaz gráfica de usuario que muestra una lista de usuarios
+ * conectados y permite a un usuario seleccionar a otro para retar a jugar.
+ */
 public class IUClienteCola extends javax.swing.JFrame{
 
     private Socket socket;
@@ -18,6 +21,12 @@ public class IUClienteCola extends javax.swing.JFrame{
     private String usuario;
     private DefaultListModel<String> listModel;
 
+    /**
+     * Constructor de la clase IUClienteCola.
+     * @param usuario Nombre de usuario del jugador actual.
+     * @throws IOException Si ocurre un error de entrada/salida al conectarse al servidor.
+     * @throws InterruptedException Si ocurre una interrupción mientras se espera la conexión.
+     */
     public IUClienteCola(String usuario) throws IOException, InterruptedException {
         this.usuario = usuario;
         initComponents();
@@ -54,6 +63,12 @@ public class IUClienteCola extends javax.swing.JFrame{
         }).start();
     }
 
+    /**
+     * Método para escuchar los mensajes del servidor.
+     * Maneja los eventos de retos aceptados y de ser retado.
+     * @throws ClassNotFoundException Si ocurre un error al cargar una clase que no existe.
+     * @throws InterruptedException Si ocurre una interrupción mientras se espera la respuesta del servidor.
+     */
     private void listenForMessages() throws ClassNotFoundException, InterruptedException {
         try {
             System.out.println("Escuchando...");
@@ -165,6 +180,12 @@ public class IUClienteCola extends javax.swing.JFrame{
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Método ejecutado cuando se hace clic en el botón "Retar".
+     * Muestra un mensaje si no se selecciona ningún usuario o si el usuario intenta retarse a sí mismo.
+     * Envia una solicitud de reto al usuario seleccionado.
+     * @param evt Evento de acción que activa este método.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String usuarioReto = jList1.getSelectedValue();
         if (usuarioReto != null) {
@@ -179,6 +200,12 @@ public class IUClienteCola extends javax.swing.JFrame{
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * Método ejecutado cuando se hace clic en el botón "Salir".
+     * Elimina al usuario actual de la lista de usuarios conectados.
+     * Cierra la interfaz actual y muestra la interfaz de inicio de sesión.
+     * @param evt Evento de acción que activa este método.
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
             // Eliminar el nombre del usuario de la lista
@@ -195,6 +222,9 @@ public class IUClienteCola extends javax.swing.JFrame{
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    /**
+     * Conecta al cliente con el servidor.
+     */
     private void connectToServer() {
         try {
             socket = new Socket("localhost", 7894);

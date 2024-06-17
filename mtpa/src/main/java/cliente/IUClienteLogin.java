@@ -1,5 +1,5 @@
 
-package cliente;
+package Cliente;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,13 +10,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-
+/**
+ * IUClienteLogin representa la interfaz de usuario para el inicio de sesión de los usuarios.
+ */
 public class IUClienteLogin extends javax.swing.JFrame {
 
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
 
+    /**
+     * Constructor de IUClienteLogin.
+     * @param socket El socket de conexión.
+     */
     public IUClienteLogin(Socket socket) {
         this.socket = socket;
         initComponents();
@@ -84,6 +90,10 @@ public class IUClienteLogin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Maneja el evento de inicio de sesión.
+     * @param evt El evento de acción.
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String username = jTextField1.getText();
         String password = new String(jPasswordField1.getPassword());
@@ -125,6 +135,9 @@ public class IUClienteLogin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
     
+    /**
+     * Establece la conexión con el servidor.
+     */
     private void conexionServidor() {
         try {
             out = new PrintWriter(socket.getOutputStream(), true);

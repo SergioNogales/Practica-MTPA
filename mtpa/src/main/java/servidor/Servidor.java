@@ -1,4 +1,4 @@
-package servidor;
+package Servidor;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,6 +22,9 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Clase Servidor que maneja las conexiones y la lógica del servidor.
+ */
 public class Servidor implements Runnable {
     
     private static final int PORT_SERVICE = 7894;
@@ -35,6 +38,11 @@ public class Servidor implements Runnable {
     private int finish = 0;
     //NO IMPLEMENTAR ArrayList<hiloRegistro> hilosRegister = new ArrayList<>();
     
+    /**
+     * Constructor de la clase Servidor.
+     *
+     * @throws IOException Si ocurre un error de entrada/salida al crear el ServerSocket.
+     */
     public Servidor() throws IOException {
         servidor = new ServerSocket(PORT_SERVICE);
         //hilosRegister = new ArrayList<>();
@@ -43,6 +51,9 @@ public class Servidor implements Runnable {
         initserver();  
     }
     
+    /**
+     * Método que ejecuta el hilo del servidor.
+     */
     public void run() {
         try {
             boolean salir = false;
@@ -87,12 +98,20 @@ public class Servidor implements Runnable {
         } catch (Exception ex) {
             ex.printStackTrace();
     }        }
-
+    
+    /**
+     * Obtiene el estado del servidor.
+     *
+     * @return El valor de finish.
+     */
     public int getFinish()
     {
         return finish;
     }
     
+    /**
+     * Inicializa el servidor y espera conexiones de clientes.
+     */
     public void initserver() {
         try {
             System.out.println("Servidor encendido");
@@ -105,6 +124,11 @@ public class Servidor implements Runnable {
         }
     }
     
+    /**
+     * Maneja la conexión de un cliente.
+     *
+     * @param sck El socket del cliente.
+     */
     public void handleClient(Socket sck) {
         try {
             // Sistema de mensajes mediante el socket
@@ -206,6 +230,13 @@ public class Servidor implements Runnable {
         }
     }
     
+    /**
+     * Busca un jugador por su nombre de usuario.
+     *
+     * @param username El nombre de usuario del jugador.
+     * @return El jugador encontrado.
+     * @throws IOException Si el jugador no se encuentra.
+     */
     public jugador buscarJugador(String username) throws IOException
     {
         for(int i = 0; i<playerCount; i++)
@@ -218,6 +249,13 @@ public class Servidor implements Runnable {
         throw new IOException();
     }
     
+    /**
+     * Elimina un jugador de la lista.
+     *
+     * @param jugadores La lista de jugadores.
+     * @param index El índice del jugador a eliminar.
+     */
+
     public static void eliminarJugador(jugador[] jugadores, int index) 
     {
         if (index < 0 || index >= jugadores.length)
@@ -232,6 +270,12 @@ public class Servidor implements Runnable {
         }
     }
 
+    /**
+     * Lee un mensaje del socket del cliente.
+     *
+     * @param cliente El socket del cliente.
+     * @return El mensaje leído.
+     */
     private byte[] readSocket(Socket cliente) 
     {
         byte[] socketMessage = null;
@@ -252,10 +296,18 @@ public class Servidor implements Runnable {
     }
 }
 
+/**
+ * Representa un hilo para el registro de usuarios
+ */
+
 class hiloRegistro extends Thread {
     private Socket socket;
     private OutputStream os;
     private InputStream is;
+    
+    /*
+    * Crea el fichero necesario o le abre si está creado
+    */
     
     public static void crearFichero() {
         File carpeta = new File("./TresEnRaya");
@@ -271,6 +323,13 @@ class hiloRegistro extends Thread {
         }
     }
     
+    /**
+     * Busca un usuario en el archivo de registro.
+     * @param username El nombre de usuario a buscar.
+     * @return El registro del usuario si se encuentra, de lo contrario null.
+     * @throws FileNotFoundException Si no se encuentra el archivo.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public String buscarUsuario(String username)throws FileNotFoundException, IOException
     {
         BufferedReader br = new BufferedReader(new FileReader("./TresEnRaya/registro.txt"));
@@ -288,6 +347,13 @@ class hiloRegistro extends Thread {
         return null;
     }
     
+    /**
+     * Registra un nuevo usuario escribiendo su nombre de usuario y contraseña en el archivo.
+     * @param username El nombre de usuario a registrar.
+     * @param password La contraseña del usuario.
+     * @throws FileNotFoundException Si no se encuentra el archivo.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public void registrarUsuario(String username, String password) throws FileNotFoundException, IOException
     {
         BufferedWriter bw = new BufferedWriter(new FileWriter("./TresEnRaya/registro.txt", true));
@@ -296,6 +362,11 @@ class hiloRegistro extends Thread {
         bw.close();
     }
     
+    /**
+     * Construye un nuevo hilo hiloRegistro.
+     * @param _socket El socket asociado con este hilo.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public hiloRegistro(Socket _socket) throws IOException 
     {
         socket = _socket;
@@ -304,6 +375,10 @@ class hiloRegistro extends Thread {
         crearFichero();
     }
     
+    /**
+     * La lógica principal del hilo hiloRegistro.
+     * Escucha continuamente las solicitudes de registro, las procesa y envía respuestas.
+     */
     @Override
     public void run()
     {
@@ -338,12 +413,21 @@ class hiloRegistro extends Thread {
     }
 }
 
+/**
+ * Representa un hilo responsable de manejar el inicio de sesión de usuarios.
+ */
 class hiloLogin extends Thread {
     private Socket socket;
     private OutputStream os;
     private InputStream is;
     
-    
+    /**
+     * Busca un usuario en el archivo de registro.
+     * @param username El nombre de usuario a buscar.
+     * @return El registro del usuario si se encuentra, de lo contrario null.
+     * @throws FileNotFoundException Si no se encuentra el archivo.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public String buscarUsuario(String username) 
             throws FileNotFoundException, IOException 
     {
@@ -360,7 +444,11 @@ class hiloLogin extends Thread {
     }
 
     
-    
+    /**
+     * Construye un nuevo hilo hiloLogin.
+     * @param _socket El socket asociado con este hilo.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public hiloLogin(Socket _socket) throws IOException 
     {
         socket = _socket;
@@ -368,6 +456,10 @@ class hiloLogin extends Thread {
         is = socket.getInputStream();
     }
     
+    /**
+     * La lógica principal del hilo hiloLogin.
+     * Escucha continuamente las solicitudes de inicio de sesión, las procesa y envía respuestas.
+     */
     @Override
     public void run()
     {
@@ -401,12 +493,21 @@ class hiloLogin extends Thread {
     }
 }
 
+/**
+ * Representa un jugador en el juego.
+ */
 class jugador{
     private Socket socket;
     private OutputStream os;
     private InputStream is;
     private String username;
     
+    /**
+     * Construye un nuevo jugador.
+     * @param _socket El socket asociado con este jugador.
+     * @param _username El nombre de usuario de este jugador.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public jugador(Socket _socket, String _username) throws IOException 
     {
         socket = _socket;
@@ -415,37 +516,72 @@ class jugador{
         is = socket.getInputStream();
     }
 
+    /**
+     * Devuelve el socket asociado con este jugador.
+     * @return El socket.
+     */
     public Socket getSocket() {
         return socket;
     }
     
+    /**
+     * Devuelve el flujo de salida asociado con este jugador.
+     * @return El flujo de salida.
+     */
     public OutputStream getOs() {
         return os;
     }
 
+    /**
+     * Devuelve el flujo de salida de objetos asociado con este jugador.
+     * @return El flujo de salida de objetos.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public ObjectOutputStream getOOs() throws IOException {
         return new ObjectOutputStream(socket.getOutputStream());
     }
     
+    /**
+     * Devuelve el flujo de entrada de objetos asociado con este jugador.
+     * @return El flujo de entrada de objetos.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public ObjectInputStream getOIs() throws IOException {
         return new ObjectInputStream(socket.getInputStream());
     }
     
+    /**
+     * Devuelve el flujo de entrada asociado con este jugador.
+     * @return El flujo de entrada.
+     */
     public InputStream getIs() {
         return is;
     }
 
+    /**
+     * Devuelve el nombre de usuario de este jugador.
+     * @return El nombre de usuario.
+     */
     public String getUsername() {
         return username;
     }
 }
 
+/**
+ * Representa un hilo responsable de manejar una partida entre dos jugadores.
+ */
 class hiloPartida extends Thread {
 
     private jugador p1;
     private jugador p2;
     private int[][] tablero = new int[3][3];
     
+    /**
+     * Construye un nuevo hilo hiloPartida.
+     * @param _p1 El primer jugador.
+     * @param _p2 El segundo jugador.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public hiloPartida(jugador _p1, jugador _p2) throws IOException 
     {
         p1 = _p1;
@@ -453,6 +589,10 @@ class hiloPartida extends Thread {
         this.run();
     }
     
+    /**
+     * La lógica principal del hilo hiloPartida.
+     * Alterna continuamente los turnos entre los dos jugadores y verifica si la partida ha terminado.
+     */
     @Override
     public void run()
     {
@@ -478,6 +618,11 @@ class hiloPartida extends Thread {
         }
     }
     
+    /**
+     * Verifica si hay un ganador o si la partida es un empate.
+     * @return True si la partida ha terminado, de lo contrario false.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public boolean comprobador() throws IOException
     {
         if(comprobador(tablero)!= "no")
@@ -499,6 +644,12 @@ class hiloPartida extends Thread {
         return false;
     }
     
+    /**
+     * Gestiona el turno de un jugador.
+     * @param player El jugador que está tomando su turno.
+     * @throws IOException Si ocurre un error de entrada/salida.
+     * @throws ClassNotFoundException Si la clase del objeto serializado no se puede encontrar.
+     */
     public void turno (jugador player) throws IOException, ClassNotFoundException
     {
         player.getOs().write("mueve".getBytes());
@@ -506,6 +657,9 @@ class hiloPartida extends Thread {
         tablero = (int[][])player.getOIs().readObject();
     }
     
+    /**
+     * Inicializa el tablero de juego con ceros.
+     */
     public void inicializarTablero() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -514,6 +668,11 @@ class hiloPartida extends Thread {
         }
     }
     
+    /**
+     * Verifica el estado del tablero para determinar si hay un ganador o si el juego continúa.
+     * @param tablero El estado actual del tablero de juego.
+     * @return "x" si el jugador X ha ganado, "o" si el jugador O ha ganado, "no" si no hay ganador.
+     */
     public String comprobador(int[][] tablero)
     {
         
