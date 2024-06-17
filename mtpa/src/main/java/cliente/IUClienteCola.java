@@ -214,7 +214,8 @@ public class IUClienteCola extends javax.swing.JFrame{
             // Eliminar el nombre del usuario de la lista
             listModel.removeElement(usuario);
             jList1.repaint();
-            out.println("meboi");
+            JOptionPane.showMessageDialog(this, "Saliendo...");
+            out.println("salir");
             Thread.sleep(20);
             out.println(usuario);
             IUCliente1 c1 = new IUCliente1();

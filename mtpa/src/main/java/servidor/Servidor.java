@@ -212,29 +212,24 @@ public class Servidor implements Runnable {
                             OutputStream osR = retado.getOs();
                             osR.write(mensajeEntrante.getBytes());
                         }
-                    }
-                    break;
-                    
-                case "meboi":
-                    //cogemos el usuario a quitar de la lista
-                    buffer = new byte[1024];
-                    input.read(buffer);
-                    mensajeEntrante = new String(buffer).trim();
-                    //Eliminamos el objeto
-                    for(int i = 0; i<=jugadores.length; i++)
-                    {
-                        jugador tmp = jugadores[i];
-                        if(tmp.getUsername() == mensajeEntrante)
+                        if(mensajeEntrante.contains("salir"))
                         {
-                            eliminarJugador(jugadores, i);
-                        }
+                            //cogemos el usuario a quitar de la lista
+                            buffer = new byte[1024];
+                            input.read(buffer);
+                            mensajeEntrante = new String(buffer).trim();
+                            //Eliminamos el objeto
+                            for(int i = 0; i<=jugadores.length; i++)
+                            {
+                                jugador tmp = jugadores[i];
+                                if(tmp.getUsername().equals(mensajeEntrante))
+                                {
+                                    eliminarJugador(jugadores, i);
+                                }
+                            }
+                         }
                     }
                     break;
-                    
-                case "reto aceptado":
-
-                    break;
-                    
                 default:
                     break;
             }
